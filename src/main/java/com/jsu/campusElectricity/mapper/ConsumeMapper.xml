@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsu.campusElectricity.mapper.ConsumeMapper">
+  <resultMap id="BaseResultMap" type="com.jsu.campusElectricity.pojo.Consume">
+    <id column="pk_consume_id" jdbcType="INTEGER" property="consumeId" />
+    <result column="consume_date" jdbcType="DATE" property="consumeDate" />
+    <result column="consume_kwh" jdbcType="DOUBLE" property="consumeKwh" />
+    <result column="consume_amount" jdbcType="DOUBLE" property="consumeAmount" />
+    <result column="consume_balance" jdbcType="DOUBLE" property="consumeBalance" />
+    <result column="dormitory_id" jdbcType="INTEGER" property="dormitoryId" />
+  </resultMap>  
+  
+  <sql id="Base_Column_List">
+    pk_consume_id, consume_date, consume_kwh, consume_amount, consume_balance,dormitory_id  
+  </sql>
+  
+  <!-- 根据宿舍ID分页查询消费记录 -->
+  <select id="listConsumesPageByDormitoryId" resultMap="BaseResultMap">
+    select * from tb_consume where dormitory_id=#{dormitoryId} order by consume_date desc
+  </select>
+  
+  <!-- 根据日期范围和宿舍号分页查询消费记录 -->
+  <select id="listConsumesPage" resultMap="BaseResultMap">
+    select * from tb_consume 
+    <where>
+    <if test="startTime != null and endTime != null">
+    and consume_date between DATE_FORMAT(#{startTime},'%Y-%m-%d') and DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+  	<if test="dormitoryId != null">
+    and dormitory_id = #{dormitoryId}
+    </if>
+  	</where>
+  	order by consume_date desc
+  </select>
+</mapper>

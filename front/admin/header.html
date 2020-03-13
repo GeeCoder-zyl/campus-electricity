@@ -1,0 +1,89 @@
+<header class="navbar-wrapper">
+	<div class="navbar navbar-fixed-top">
+		<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">校园用电后台管理</a>
+			<a class="logo navbar-logo-m f-l mr-10 visible-xs" href="/aboutHui.shtml">H-ui</a>
+			<span class="logo navbar-slogan f-l mr-10 hidden-xs">v1.0</span>
+			<a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
+			<nav class="nav navbar-nav">
+				<ul class="cl">
+					<li class="dropDown dropDown_hover">
+						<a href="javascript:;" class="dropDown_A"><i class="Hui-iconfont">&#xe600;</i> 新增 <i class="Hui-iconfont">&#xe6d5;</i></a>
+						<ul class="dropDown-menu menu radius box-shadow">
+							<li>
+								<a href="javascript:;" onclick="member_add('新增宿舍','../admin/add-dormitory.html','','500')"><i class="Hui-iconfont">&#xe616;</i>宿舍</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</nav>
+			<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
+				<ul class="cl">
+					<li>管理员</li>
+					<li class="dropDown dropDown_hover">
+						<a href="#" class="dropDown_A">
+							<font id="adminName"></font> <i class="Hui-iconfont">&#xe6d5;</i>
+						</a>
+						<ul class="dropDown-menu menu radius box-shadow">
+							<li><a href="javascript:;" onClick="logOut()">退出登录</a></li>
+						</ul>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</header>
+<script>
+	/* 从cookie中获取管理员登录信息 */
+	$(function() {
+		var adminName = $.cookie("adminName");
+		//cookie中的用户名为空则跳转到登录页面
+		if (adminName == null) {
+			top.location.href = '../admin/admin-login.html';
+		}
+		$("#adminName").text(adminName);
+	})
+
+	/* 管理员退出登录 */
+	function logOut() {
+		$.ajax({
+			type: 'delete',
+			url: '../api/admin-logOut',
+			data: {
+
+			},
+			xhrFields: {
+				withCredentials: true
+			},
+			success: function(data) {
+				//后端返回session为空的信息则跳转到登录页面
+				if (data == 'sessionIsNull') {
+					window.location.href = '../admin/admin-login.html';
+				} else if (data.error == null) {
+					//清除cookie中的用户信息并跳转到登录页面
+					$.removeCookie('adminName', {
+						path: '/'
+					});
+					window.location.href = '../admin/admin-login.html';
+				} else {
+					layer.msg(data.error, {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				}
+			},
+			error: function(data) {
+				console.log(data.msg);
+				layer.msg(data.error, {
+					icon: 2,
+					offset: '50%',
+					time: 1500
+				});
+				//后端返回session为空的信息则跳转到登录页面
+				if (data.responseText == 'sessionIsNull') {
+					window.location.href = '../admin/admin-login.html';
+				}
+			},
+		})
+	}
+</script>

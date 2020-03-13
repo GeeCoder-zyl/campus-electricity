@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>用户注册</title>
+		<link rel="stylesheet" type="text/css" href="../static/css/user-register.css" />
+	</head>
+	<body>
+		<div class="box">
+			<h2>注册</h2>
+			<div id="error_box"></div>
+			<div class="input_box">
+				<input type="text" id="userName" onblur="checkUserName()" placeholder="3-10位字符" />
+			</div>
+			<div class="input_box">
+				<input type="password" id="userPassword" onblur="checkUserPassword()" placeholder="3-10位字母数字下划线" />
+			</div>
+			<div class="input_box">
+				<input type="password" id="confirmPass" onblur="checkConfirmPass()" placeholder="3-10位字母数字下划线" />
+			</div>
+			<div class="input_box">
+				<button class="register_button" onclick="userRegister()">注册</button>
+			</div>
+			<div class="input_box">
+				<button class="login_button" onclick="window.location.href='../user/user-login.html'">已有账号 ？去登录</button>
+			</div>
+		</div>
+		<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+		<script>
+			var userName; //用户名
+			var userPassword; //密码
+			var confirmPass; //确认密码
+			var error = document.getElementById("error_box"); //错误信息
+
+			/* 回车键触发注册操作 */
+			$("#confirmPass").keyup(function(event) {
+				if (event.which === 13) {
+					userRegister();
+				}
+			})
+
+			/* 用户注册 */
+			function userRegister() {
+				error.innerHTML = null;
+				if (checkUserName() && checkUserPassword() && checkConfirmPass()) {
+					$.ajax({
+						type: 'post',
+						url: '../api/user-register',
+						data: {
+							'userName': userName,
+							'userPassword': userPassword,
+							'confirmPass': confirmPass
+						},
+						success: function(data) {
+							console.log(data);
+							if (data.error == null) {
+								window.location.href = '../user/user-login.html';
+							} else {
+								error.innerHTML = data.error;
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+						},
+					})
+				}
+			}
+
+			/* 检查用户名 */
+			function checkUserName() {
+				var regExp = /^.{3,10}$/; //3-10位的所有字符
+				userName = $("#userName").val().trim();
+				if (userName.length < 1) {
+					$("#userName").css('border-color', '#f70606');
+					error.innerHTML = "用户名不能为空";
+					return false;
+				} else if (!regExp.test(userName)) {
+					$("#userName").css('border-color', '#f70606');
+					error.innerHTML = "用户名由3-10位字符组成";
+					return false;
+				} else {
+					$("#userName").css('border-color', '#ddd');
+					return true;
+				}
+			}
+
+			/* 检查密码 */
+			function checkUserPassword() {
+				var regExp = /^\w{3,10}$/; //3-10位字母数字下划线
+				userPassword = $("#userPassword").val().trim();
+				if (userPassword.length < 1) {
+					$("#userPassword").css('border-color', '#f70606');
+					error.innerHTML = "密码不能为空";
+					return false;
+				} else if (!regExp.test(userPassword)) {
+					$("#userPassword").css('border-color', '#f70606');
+					error.innerHTML = "密码由3-10位字母数字下划线组成";
+					return false;
+				} else {
+					$("#userPassword").css('border-color', '#ddd');
+					return true;
+				}
+			}
+
+			/* 检查确认密码 */
+			function checkConfirmPass() {
+				confirmPass = $("#confirmPass").val().trim();
+				if (confirmPass != userPassword) {
+					error.innerHTML = "两次输入的密码不一致";
+					$("#confirmPass").css('border-color', '#f70606');
+					return false;
+				} else {
+					$("#userPassword").css('border-color', '#ddd');
+					return true;
+				}
+			}
+
+			/* 获取输入框焦点 */
+			$("#userName").focus(function() {
+				$("#userName").css('border-color', '#ddd');
+			});
+			$("#userPassword").focus(function() {
+				$("#userPassword").css('border-color', '#ddd');
+			});
+			$("#confirmPass").focus(function() {
+				$("#confirmPass").css('border-color', '#ddd');
+			});
+		</script>
+	</body>
+</html>

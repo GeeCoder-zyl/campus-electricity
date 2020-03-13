@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<style type="text/css">
+	.exit {
+		color: white;
+	}
+</style>
+<div class="header">
+	<div class="bar">
+		<div class="w1200">
+			<span class="l"><strong>校园用电</strong></span>
+			<span class="r"><a class="exit" href="javascript:;" onclick="logOut()"><i class="icon iconfont icon-dianyuan"></i>退出</a></span>
+		</div>
+	</div>
+	<div class="user-info">
+		<div class="w1200">
+			<div class="user-account">
+				<p class="tip" id="userName1">你好，用户</p>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.cookie.js"></script>
+<script>
+	/* 从cookie中获取用户登录信息 */
+	$(function() {
+		var userName = $.cookie("userName");
+		if (userName == null) { //cookie中用户名为空则跳转到登录页面
+			window.location.href = '../user/user-login.html';
+		}
+		$("#userName1").text("你好，" + userName);
+	})
+
+	/* 用户退出登录 */
+	function logOut() {
+		$.ajax({
+			type: 'delete',
+			url: '../api/user-logOut',
+			data: {
+
+			},
+			success: function(data) {
+				if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+					window.location.href = '../user/user-login.html';
+				} else if (data.error == null) {
+					//清除cookie中的用户信息并跳转到登录页面
+					$.removeCookie('userName', {
+						path: '/'
+					});
+					window.location.href = '../user/user-login.html';
+				} else {
+					layer.msg(data.error, {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				}
+			},
+			error: function(data) {
+				console.log(data.msg);
+				layer.msg(data.error, {
+					icon: 2,
+					offset: '50%',
+					time: 1500
+				});
+				//后端返回session为空的信息则跳转到登录页面
+				if (data.responseText == 'sessionIsNull') {
+					window.location.href = '../admin/admin-login.html';
+				}
+			},
+		})
+	}
+</script>

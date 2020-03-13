@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link href="../static/hui/static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+		<link href="../static/hui/static/h-ui.admin/css/H-ui.login.css" rel="stylesheet" type="text/css" />
+		<link href="../static/hui/static/h-ui.admin/css/style.css" rel="stylesheet" type="text/css" />
+		<link href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" rel="stylesheet" type="text/css" />
+		<title>校园用电后台管理登录</title>
+	</head>
+	<body>
+		<input type="hidden" id="TenantId" name="TenantId" value="" />
+		<div class="header"></div>
+		<div class="loginWraper">
+			<div id="loginform" class="loginBox">
+				<form class="form form-horizontal">
+					<div style="text-align: center;">
+						<span>
+							<font id="error_box" color="red" size="4px">&nbsp;</font>
+						</span>
+					</div>
+					<div class="row cl">
+						<label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label>
+						<div class="formControls col-xs-8">
+							<input type="text" id="adminName" onblur="checkAdminName()" placeholder="管理员名" class="input-text size-L" />
+						</div>
+					</div>
+					<div class="row cl">
+						<label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60e;</i></label>
+						<div class="formControls col-xs-8">
+							<input type="password" id="adminPassword" onblur="checkAdminPassword()" placeholder="密码" class="input-text size-L" />
+						</div>
+					</div>
+					<div class="row cl">
+						<div class="formControls col-xs-8 col-xs-offset-3">
+							<input type="text" id="validateCode" onblur="checkValidateCode()" placeholder="验证码" style="width:150px;" class="input-text size-L">
+							<img src="../api/getValidateCode" id="validateCodeImg" onClick="flushValidateCode()">
+							<a href="javascript:;" onclick="flushValidateCode()">看不清，换一张</a>
+						</div>
+					</div>
+					<div class="row cl">
+						<div class="formControls col-xs-8 col-xs-offset-3">
+							<input type="button" class="btn btn-success radius size-L" onclick="adminLogin()" value="登录" />
+							&nbsp;&nbsp;&nbsp;
+							<input type="reset" class="btn btn-default radius size-L" value="清空" />
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="footer">Copyright 校园用电 by H-ui.admin v3.1</div>
+		<script type="text/javascript" src="../static/hui/lib/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui/js/H-ui.min.js"></script>
+		<script type="text/javascript">
+			var adminName; //管理员名
+			var adminPassword; //密码
+			var validateCode; //验证码
+			var error = document.getElementById("error_box"); //错误信息
+
+			/* 判断当前窗口是不是最顶层浏览器窗口 */
+			if (window != top) {
+				top.location.href = location.href; //在最顶层浏览器窗口打开当前页
+			}
+
+			/* 刷新验证码 */
+			function flushValidateCode() {
+				var validateCodeImg = document.getElementById("validateCodeImg");
+				validateCodeImg.src = "../api/getValidateCode?time=" + new Date();
+			}
+
+			/* 回车键触发登录操作 */
+			$("#validateCode").keyup(function(event) {
+				if (event.which === 13) {
+					adminLogin();
+				}
+			})
+
+			/*管理员登录*/
+			function adminLogin() {
+				error.innerHTML = null;
+				if (checkAdminName() && checkAdminPassword() && checkValidateCode()) {
+					$.ajax({
+						type: 'post',
+						url: '../api/admin-login',
+						data: {
+							'adminName': adminName,
+							'adminPassword': adminPassword,
+							'validateCode': validateCode
+						},
+						success: function(data) {
+							if (data.error == null) {
+								window.location.href = '../admin/admin-index.html';
+							} else {
+								error.innerHTML = data.error;
+								if (data.error != '验证码不正确！') {
+									flushValidateCode();
+								}
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+						},
+					})
+				}
+			}
+
+			/* 检查管理员名 */
+			function checkAdminName() {
+				var regExp = /^.{3,10}$/; //1-10位的所有字符
+				adminName = document.getElementById("adminName").value.trim();
+				if (adminName.length < 1) {
+					$("#adminName").css('border-color', '#f70606');
+					error.innerHTML = "管理员名不能为空";
+					return false;
+				} else if (!regExp.test(adminName)) {
+					$("#adminName").css('border-color', '#f70606');
+					error.innerHTML = "管理员名由3-10位字符组成";
+					return false;
+				} else {
+					$("#adminName").css('border-color', '#ddd');
+					return true;
+				}
+			}
+
+			/* 检查密码 */
+			function checkAdminPassword() {
+				var regExp = /^\w{3,10}$/; //3-10位字母数字下划线
+				adminPassword = document.getElementById("adminPassword").value.trim();
+				if (adminPassword.length < 1) {
+					$("#adminPassword").css('border-color', '#f70606');
+					error.innerHTML = "密码不能为空";
+					return false;
+				} else if (!regExp.test(adminPassword)) {
+					$("#adminName").css('border-color', '#f70606');
+					error.innerHTML = "密码由3-10位字母数字下划线组成";
+					return false;
+				} else {
+					$("#adminPassword").css('border-color', '#ddd');
+					return true;
+				}
+			}
+
+			/* 检查验证码 */
+			function checkValidateCode() {
+				validateCode = document.getElementById("validateCode").value.trim();
+				if (validateCode.length < 1) {
+					$("#validateCode").css('border-color', '#f70606');
+					error.innerHTML = "验证码不能为空";
+					return false;
+				} else {
+					$("#validateCode").css('border-color', '#ddd');
+					return true;
+				}
+			}
+
+			/* 获取输入框焦点 */
+			$("#adminName").focus(function() {
+				$("#adminName").css('border-color', '#ddd');
+			});
+			$("#adminPassword").focus(function() {
+				$("#adminPassword").css('border-color', '#ddd');
+			});
+			$("#validateCode").focus(function() {
+				$("#validateCode").css('border-color', '#ddd');
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<style>
+	a {
+		color: #666666;
+	}
+</style>
+<div class="left">
+	<ul>
+		<li>
+			<a id="index" href="../user/user-index.html?menu=index"><i class="icon iconfont"></i>宿舍信息</a>
+		</li>
+		<li>
+			<a id="personalInfo" href="../user/personal-info.html?menu=personalInfo"><i class="icon iconfont"></i>个人信息</a>
+		</li>
+		<li>
+			<a id="consumeRecord" href="../user/consume-record.html?menu=consumeRecord"><i class="icon iconfont"></i>消费记录</a>
+		</li>
+		<li>
+			<a id="payRecord" href="../user/pay-record.html?menu=payRecord"><i class="icon iconfont"></i>充值记录</a>
+		</li>
+	</ul>
+</div>
+<script>
+	/* 判断菜单选择 */
+	$(function() {
+		var menu;
+		var url = window.location.search; //获取url中"?"后的字符串
+		if (url.indexOf("?") != -1) {
+			menu = url.substr(url.indexOf("=") + 1); //获取"="和"&"之间的字符串
+		}
+		if (menu == 'index') {
+			$("#index").addClass("active");
+		} else if (menu == 'personalInfo') {
+			$("#personalInfo").addClass("active");
+		} else if (menu == 'consumeRecord') {
+			$("#consumeRecord").addClass("active");
+		} else if (menu == 'payRecord') {
+			$("#payRecord").addClass("active");
+		}
+	})
+</script>

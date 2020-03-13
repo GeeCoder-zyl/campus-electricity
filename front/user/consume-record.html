@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>消费记录</title>
+		<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/button.css" />
+	</head>
+	<style>
+		th {
+			font-size: 20px;
+			text-align: center;
+			width: 250px;
+		}
+
+		td {
+			font-size: 20px;
+			text-align: center;
+		}
+
+		.name {
+			text-align: right;
+		}
+	</style>
+	<body>
+		<div id="header"></div>
+		<div class="main w1200">
+			<div id="menu"></div>
+			<div id="consumeRecord">
+				<div class="right">
+					<div class="tap">
+						<span>消费记录</span>
+					</div>
+					<div class="container">
+						<table>
+							<tr>
+								<th>日期</th>
+								<th>用电量</th>
+								<th>消费金额</th>
+								<th>余额</th>
+							</tr>
+							<tr v-for="consume in consumeList">
+								<td>{{ consume.consumeDate | formatDate }}</td>
+								<td>{{ consume.consumeKwh }} kW·h</td>
+								<td>{{ consume.consumeAmount | formatMoney }}</td>
+								<td>{{ consume.consumeBalance | formatMoney }}</td>
+							</tr>
+						</table>
+						<p v-if="error != null" style="color: red;font-size: 20px;">{{ error }}</p>
+					</div>
+					<div v-if="total != null && total != 0">
+						<div style="float:left;font-size:20px">
+							<a href="javascript:;" @click="findConsumesPageByDormitoryId(1, pageSize)">首页</a>&nbsp;
+							<a href="javascript:;" @click="findConsumesPageByDormitoryId(nowPage-1, pageSize)">上一页</a>&nbsp;
+							<span>{{ nowPage }} / {{ totalPage }}</span>&nbsp;
+							<a href="javascript:;" @click="findConsumesPageByDormitoryId(nowPage+1, pageSize)">下一页</a>&nbsp;
+							<a href="javascript:;" @click="findConsumesPageByDormitoryId(totalPage, pageSize)">尾页</a>
+						</div>
+						<div style="float:right;font-size:20px">
+							<span style="margin-right: 105px;">
+								每页显示
+								<select id="selectPageSize" ref="selectPageSize" class="select" @change="findConsumesPageByDormitoryId(1, $refs.selectPageSize.value)">
+									<option value="5">5</option>
+									<option value="10">10</option>
+									<option value="25">25</option>
+								</select>
+								条
+							</span>
+							<span>共有数据：{{ total }}&nbsp;条，每页显示：{{ pageSize }}&nbsp;条</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="footer"></div>
+		<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/js/vue.js"></script>
+		<script type="text/javascript" src="../static/js/axios.min.js"></script>
+		<script type="text/javascript" src="../static/js/day.min.js"></script>
+		<script type="text/javascript" src="../static/js/accounting.min.js"></script>
+		<script>
+			/* 加载页眉和菜单DOM */
+			$("#header").load("header.html");
+			$("#menu").load("menu.html");
+
+			/* 格式化时间过滤器 */
+			Vue.filter("formatDate", function(date) {
+				return dayjs(date).format("YYYY-MM-DD");
+			});
+
+			/* 格式化金额过滤器 */
+			Vue.filter("formatMoney", function(money) {
+				return accounting.formatMoney(money, "￥", 2, ",", ".");
+			});
+
+			/* Axios获取消费记录数据 */
+			var vm = new Vue({
+				el: '#consumeRecord',
+				data: {
+					consumeList: {},
+					nowPage: {},
+					pageSize: {},
+					totalPage: {},
+					total: {},
+					error: {}
+				},
+				mounted() { //在vue实例挂载完毕（页面加载完毕）时调用Axios方法
+					this.findConsumesPageByDormitoryId(1, 5);
+				},
+				methods: { //Axios数据加载方法
+					findConsumesPageByDormitoryId: function(nowPage, pageSize) {
+						var that = this; //this指向vm
+						axios.get('../api/user-findConsumesPageByDormitoryId', {
+								params: {
+									nowPage: nowPage,
+									pageSize: pageSize
+								},
+								headers: {
+									'x-requested-with': 'XMLHttpRequest'
+								},
+							})
+							.then(function(response) {
+								if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+									window.location.href = '../user/user-login.html';
+								} else {
+									that.consumeList = response.data.consumeList; //获取消费记录
+									that.nowPage = response.data.nowPage; //获取当前页
+									that.pageSize = response.data.pageSize; //获取每页条数
+									that.totalPage = response.data.totalPage; //获取总页数
+									that.total = response.data.total; //获取总条数
+									that.error = response.data.error; //获取后端返回的错误信息
+									if (response.data.error != null) {
+										layer.msg(response.data.error, {
+											icon: 2,
+											time: 1500
+										});
+									}
+								}
+							})
+							.catch(function(error) {
+								console.log(error);
+							});
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

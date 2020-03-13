@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsu.campusElectricity.mapper.DormitoryMapper">
+  <resultMap id="BaseResultMap" type="com.jsu.campusElectricity.pojo.Dormitory">
+    <id column="pk_dormitory_id" jdbcType="INTEGER" property="dormitoryId" />
+    <result column="dormitory_no" jdbcType="INTEGER" property="dormitoryNo" />
+    <result column="dormitory_balance" jdbcType="DOUBLE" property="dormitoryBalance" />
+    <result column="dormitory_status" jdbcType="INTEGER" property="dormitoryStatus" />
+  </resultMap>  
+  
+  <sql id="Base_Column_List">
+     pk_dormitory_id, dormitory_no, dormitory_balance, dormitory_status
+  </sql>
+  
+  <!-- 根据宿舍号和送电状态分页模糊查询宿舍信息 -->
+  <select id="listDormitorysPage" resultMap="BaseResultMap">
+    select * from tb_dormitory
+    <where>
+  	<if test="dormitory.dormitoryNo != null">
+    and dormitory_no like concat('%',#{dormitory.dormitoryNo},'%')
+    </if>
+    <if test="dormitory.dormitoryStatus != null">
+    and dormitory_status = #{dormitory.dormitoryStatus}
+    </if>
+  	</where>
+</select>
+</mapper>

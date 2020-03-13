@@ -1,0 +1,268 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="Bookmark" href="/favicon.ico">
+		<link rel="Shortcut Icon" href="/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui/css/H-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/H-ui.admin.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/skin/default/skin.css" id="skin" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/style.css" />
+		<title>充值记录</title>
+	</head>
+	<body>
+		<nav class="breadcrumb">
+			首页 <span class="c-gray en">&gt;</span>充值记录 <span class="c-gray en">&gt;</span>充值记录
+			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
+			 title="刷新页面"><i class="Hui-iconfont">&#xe68f;</i></a>
+		</nav>
+		<div class="page-container">
+			<div id="payRecord">
+				<div class="text-c">
+					日期范围：
+					<input id="datemin" ref="startTime" type="text" placeholder="开始日期" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}' })"
+					 class="input-text Wdate" style="width:120px;">
+					-
+					<input id="datemax" ref="endTime" type="text" placeholder="结束日期" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d' })"
+					 class="input-text Wdate" style="width:120px;">
+					<input ref="inputDormitoryNo" type="text" placeholder="宿舍号" style="width:150px" class="input-text">
+					<button class="btn btn-success" @click="findPaysPage(1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)"><i
+						 class="Hui-iconfont">&#xe665;</i>搜索</button>
+					<button class="btn btn-success radius r" @click="findPaysPage(nowPage, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">刷新数据</button>
+				</div>
+				<div class="cl pd-5 bg-1 bk-gray mt-20">
+					<span class="r" style="font-size:15px;">共有数据：<strong>{{ total }}</strong> 条，每页显示：<strong>{{ pageSize }} 条</strong></span>
+				</div>
+				<div>
+					<span class="r">
+						<a class="btn btn-primary radius" @click="exportPaysToExcel(1, total, total, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">导出所有数据</a>
+						&nbsp;
+						<a class="btn btn-primary radius" @click="exportPaysToExcel(nowPage, pageSize, total, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">导出本页数据</a>
+					</span>
+				</div>
+				<div class="mt-20">
+					<div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+						<table class="table table-border table-bordered table-hover table-bg table-sort">
+							<thead>
+								<tr>
+									<th colspan="9" style="text-align: center;">充值记录</th>
+								</tr>
+								<tr class="text-c">
+									<th>ID</th>
+									<th width="300">宿舍号</th>
+									<th width="300">日期时间</th>
+									<th width="300">金额</th>
+									<th width="300">充值方式</th>
+									<th width="300">充值人名称</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="text-c" v-for="(pay,index) in payList">
+									<td>{{ pay.payId }}</td>
+									<td>{{ dormitoryNoList[index] }}</td>
+									<td>{{ pay.payDate | formatDate }}</td>
+									<td>{{ pay.payAmount | formatMoney }}</td>
+									<td v-if="pay.payManner == 0">管理员充值</td>
+									<td v-if="pay.payManner == 1">用户充值</td>
+									<td>{{ payNameList[index] }}</td>
+								</tr>
+							</tbody>
+						</table>
+						<div v-if="total != null && total != 0" class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+							每页显示
+							<span class="select-box inline">
+								<select id="selectPageSize" ref="selectPageSize" class="select" @change="findPaysPage(1, $refs.selectPageSize.value, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">
+									<option value="5">5</option>
+									<option value="10">10</option>
+									<option value="25">25</option>
+									<option value="50">50</option>
+								</select>
+							</span>
+							条&nbsp;&nbsp;&nbsp;
+							<a class="paginate_button first disabled" aria-controls="DataTables_Table_0" data-dt-idx="0" tabindex="0" id="firstPage"
+							 @click="findPaysPage(1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">首页</a>
+							<a class="paginate_button previous disabled" aria-controls="DataTables_Table_0" data-dt-idx="1" tabindex="0" id="previousPage"
+							 @click="findPaysPage(nowPage-1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">上一页</a>
+							<span><a class="paginate_button current" aria-controls="DataTables_Table_0" data-dt-idx="2" tabindex="0">{{ nowPage }}
+									/ {{ totalPage }}</a></span>
+							<a class="paginate_button next disabled" aria-controls="DataTables_Table_0" data-dt-idx="3" tabindex="0" id="nextPage"
+							 @click="findPaysPage(nowPage+1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">下一页</a>
+							<a class="paginate_button last disabled" aria-controls="DataTables_Table_0" data-dt-idx="4" tabindex="0" id="lastPage"
+							 @click="findPaysPage(totalPage, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">尾页</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--_footer 作为公共模版分离出去-->
+		<script type="text/javascript" src="../static/hui/lib/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui/js/H-ui.min.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui.admin/js/H-ui.admin.js"></script>
+		<!--/_footer 作为公共模版分离出去-->
+		<!--请在下方写此页面业务相关的脚本-->
+		<script type="text/javascript" src="../static/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/laypage/1.2/laypage.js"></script>
+		<script type="text/javascript" src="../static/js/vue.js"></script>
+		<script type="text/javascript" src="../static/js/axios.min.js"></script>
+		<script type="text/javascript" src="../static/js/day.min.js"></script>
+		<script type="text/javascript" src="../static/js/accounting.min.js"></script>
+		<script>
+			/* 格式化时间过滤器 */
+			Vue.filter("formatDate", function(date) {
+				return dayjs(date).format("YYYY-MM-DD hh:mm:ss");
+			});
+
+			/* 格式化金额过滤器 */
+			Vue.filter("formatMoney", function(money) {
+				return accounting.formatMoney(money, "￥", 2, ",", ".");
+			});
+
+			/* Axios获取充值记录数据 */
+			var vm = new Vue({
+				el: '#payRecord',
+				data: {
+					payList: {}, //充值记录list集合
+					payNameList: {}, //充值人名称list集合
+					dormitoryNoList: {}, //宿舍号list集合
+					nowPage: {}, //当前页
+					pageSize: {}, //每页条数
+					totalPage: {}, //总页数
+					total: {}, //总条数
+				},
+				mounted() { //在vue实例挂载完毕（页面加载完毕）时调用Axios方法
+					this.findPaysPage(1, 5, null, null, null);
+				},
+				methods: { //Axios数据加载方法
+					findPaysPage: function(nowPage, pageSize, startTime, endTime, dormitoryNo) {
+						var that = this; //this指向vm
+						axios.get('../api/admin-findPaysPage', {
+								params: {
+									nowPage: nowPage,
+									pageSize: pageSize,
+									startTime: startTime,
+									endTime: endTime,
+									dormitoryNo: dormitoryNo
+								},
+								headers: {
+									'x-requested-with': 'XMLHttpRequest'
+								},
+							})
+							.then(function(response) {
+								if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+									window.location.href = '../admin/admin-login.html';
+								} else {
+									that.payList = response.data.payList; //获取充值记录
+									that.payNameList = response.data.payNameList; //获取充值人名称
+									that.dormitoryNoList = response.data.dormitoryNoList; //获取宿舍号
+									that.nowPage = response.data.nowPage; //获取当前页
+									that.pageSize = response.data.pageSize; //获取每页条数
+									that.totalPage = response.data.totalPage; //获取总页数
+									that.total = response.data.total; //获取总条数
+									if (response.data.error != null) {
+										layer.msg(response.data.error, {
+											icon: 2,
+											time: 1500
+										});
+									}
+								}
+							})
+							.catch(function(error) {
+								console.log(error);
+							});
+					},
+
+					/* 导出充值记录 */
+					exportPaysToExcel: function(nowPage, pageSize, total, startTime, endTime, dormitoryNo) {
+						var that = this; //this指向vm
+						var hint; //提示信息
+						if (total == 0) {
+							layer.msg('当前没有数据可以导出', {
+								icon: 2,
+								time: 1500
+							});
+							return false;
+						}
+						if (pageSize == total) {
+							hint = '确认要导出所有数据吗？';
+						} else {
+							hint = '确认要导出本页数据吗？';
+						}
+						layer.confirm(hint, function() {
+							axios.get('../api/admin-exportPaysToExcel', {
+									params: {
+										nowPage: nowPage,
+										pageSize: pageSize,
+										startTime: startTime,
+										endTime: endTime,
+										dormitoryNo: dormitoryNo
+									},
+									headers: {
+										'x-requested-with': 'XMLHttpRequest'
+									},
+									responseType: 'blob' //请求的数据类型：二进制
+								})
+								.then(function(response) {
+									if (response.data.type == 'text/xml') {
+										var reader = new FileReader(); //读取文件中的数据
+										reader.readAsText(response.data);
+										reader.onload = function() {
+											var result = reader.result;
+											if (result == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+												window.location.href = '../admin/admin-login.html';
+											}
+										}
+									} else if (response.data.type == 'application/json') {
+										var reader = new FileReader(); //读取文件中的数据
+										reader.readAsText(response.data);
+										reader.onload = function() {
+											var result = JSON.parse(reader.result);
+											if (result.error != null) {
+												layer.msg('导出失败，' + result.error, {
+													icon: 2,
+													time: 1500
+												});
+											}
+										}
+									} else {
+										/* 兼容IE内核，360浏览器的兼容模式 */
+										if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+											console.log('IE');
+											let blob = new Blob([response.data]);
+											window.navigator.msSaveOrOpenBlob(blob, '充值记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
+												'.xls');
+										} else {
+											/* 火狐谷歌的文件下载方式 */
+											console.log('Firefox/Chrome');
+											var blob = new Blob([response.data]);
+											var downloadElement = document.createElement('a');
+											var href = window.URL.createObjectURL(blob);
+											downloadElement.href = href;
+											downloadElement.download = '充值记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") + '.xls';
+											document.body.appendChild(downloadElement);
+											downloadElement.click();
+											document.body.removeChild(downloadElement);
+											window.URL.revokeObjectURL(href);
+										}
+										layer.msg('已导出', {
+											icon: 1,
+											time: 1500
+										});
+									}
+								})
+								.catch(function(error) {
+									console.log(error);
+								});
+						})
+					},
+				}
+			})
+		</script>
+	</body>
+</html>

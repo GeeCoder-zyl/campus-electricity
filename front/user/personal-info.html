@@ -1,0 +1,509 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>个人信息</title>
+		<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/button.css" />
+	</head>
+	<style>
+		td {
+			font-size: 20px;
+		}
+
+		.name {
+			text-align: right;
+		}
+
+		.modal-body {
+			text-align: center;
+		}
+		
+		.model-body input {
+			height: 30px;
+		}
+</style>
+	<body>
+		<div id="header"></div>
+		<div class="main w1200">
+			<div id="menu"></div>
+			<div id="personalInfo">
+				<div class="right">
+					<div class="tap">
+						<span>个人信息</span>
+					</div>
+					<div class="container">
+						<table>
+							<tr>
+								<td class="name">用户名：</td>
+								<td>{{ user.userName }}</td>
+							</tr>
+							<tr>
+								<td class="name">真实姓名：</td>
+								<td>{{ user.userRealName }}</td>
+							</tr>
+							<tr>
+								<td class="name">联系电话：</td>
+								<td>{{ user.userTel }}</td>
+							</tr>
+							<tr>
+								<td class="name">绑定的宿舍号：</td>
+								<td v-if="dormitory.dormitoryNo != null">{{ dormitory.dormitoryNo }}</td>
+								<td v-if="dormitory.dormitoryNo == null && error != null" style="color:red">{{ error }}</td>
+							</tr>
+						</table>
+					</div>
+					<button class="button" data-toggle="modal" data-target="#modal-changeUserInfo" onclick="change()">修改个人信息</button>
+					<button class="button" data-toggle="modal" data-target="#modal-changePass">修改密码</button>
+					<button class="button" data-toggle="modal" data-target="#modal-bindDormitory">绑定宿舍</button>
+					<button class="button" onclick="changeUserDormitory()">取消绑定</button>
+				</div>
+				<!-- 模态框（Modal） -->
+				<div class="modal fade" id="modal-changeUserInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+				 aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+								</button>
+								<h4 class="modal-title" id="myModalLabel">修改个人信息</h4>
+							</div>
+							<div class="modal-body">
+								<form id="form-changeUserInfo">
+									<span style="font-size:20px">&nbsp;&nbsp;&nbsp;用户名：</span>
+									<input id="userName" placeholder="3-10位字符">
+									<strong id="userResult" style="font-size:15px;"></strong>
+									<br><br>
+									<span style="font-size:20px">真实姓名：</span>
+									<input id="userRealName" placeholder="2-4位字符">
+									<br><br>
+									<span style="font-size:20px">联系电话：</span>
+									<td><input id="userTel" placeholder="11位手机号码">
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="changeInfo()">确认</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+				<!-- 模态框（Modal） -->
+				<div class="modal fade" id="modal-bindDormitory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+				 aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+								</button>
+								<h4 class="modal-title" id="myModalLabel">绑定宿舍</h4>
+							</div>
+							<div class="modal-body">
+								<form id="form-bindDormitory">
+									<span style="font-size:20px">宿舍号：</span>
+									<input id="dormitoryNo" placeholder="纯数字编号">
+								</form>
+							</div>
+							<div>
+								<p style="font-size:15px;margin-left:170px"><strong id="dormitoryResult"></strong></p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" onclick="changeUserDormitory()">确认</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+				<!-- 模态框（Modal） -->
+				<div class="modal fade" id="modal-changePass" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+				 aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+								<h4 class="modal-title" id="myModalLabel">修改密码</h4>
+							</div>
+							<div class="modal-body">
+								<form id="form-changePass">
+									<span style="font-size:20px">&nbsp;&nbsp;&nbsp;旧密码：</span>
+									<input type="password" id="oldPassword" placeholder="3-10位小写字母数字下划线">
+									<br><br>
+									<span style="font-size:20px">&nbsp;&nbsp;&nbsp;新密码：</span>
+									<input type="password" id="newPassword" placeholder="3-10位小写字母数字下划线">
+									<br><br>
+									<span style="font-size:20px">确认密码：</span>
+									<input type="password" id="confirmPass" placeholder="3-10位小写字母数字下划线">
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" onclick="changeUserPassword()">确认</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div>
+		</div>
+		<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/js/vue.js"></script>
+		<script type="text/javascript" src="../static/js/axios.min.js"></script>
+		<script type="text/javascript">
+			/* 加载页眉和菜单DOM */
+			$("#header").load("header.html");
+			$("#menu").load("menu.html");
+
+			var user; //用户信息
+			var userResult; //记录异步校验用户名结果，0：不可用，1：可用
+			var dormitoryResult = 0; //记录异步校验宿舍号结果，0：不存在，1：存在
+			var dormitoryId; //宿舍ID
+
+			/* 修改个人信息模态框关闭时清空其内容 */
+			$("body").on("hide.bs.modal", "#modal-changeUserInfo", function() {
+				$("#userResult").text("");
+				$('#form-changeUserInfo')[0].reset();
+			});
+
+			/* 绑定宿舍模态框关闭时清空其内容 */
+			$("body").on("hide.bs.modal", "#modal-bindDormitory", function() {
+				$("#dormitoryResult").text("");
+				$('#form-bindDormitory')[0].reset();
+			});
+
+			/* 修改密码模态框关闭时清空其内容 */
+			$("body").on("hide.bs.modal", "#modal-changePass", function() {
+				$("#userResult").text("");
+				$('#form-changePass')[0].reset();
+			});
+
+			/* vue */
+			var vm = new Vue({
+				el: '#personalInfo',
+				data: {
+					user: {},
+					dormitory: {},
+					error: {}
+				},
+				mounted() {
+					var that = this;
+					axios.get('../api/user-personalInfo', {
+							headers: {
+								'x-requested-with': 'XMLHttpRequest'
+							},
+						})
+						.then(function(response) {
+							if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+								window.location.href = '../user/user-login.html';
+							} else {
+								that.user = response.data.user; //获取用户信息
+								user = response.data.user;
+								if (response.data.dormitory != null) {
+									that.dormitory = response.data.dormitory; //获取宿舍信息
+								}
+								if (response.data.error != null) {
+									that.error = response.data.error; //获取后端返回的错误信息
+								}
+							}
+						})
+						.catch(function(error) {
+							console.log(error);
+						});
+				}
+			})
+
+			//为修改个人信息输入框赋初值
+			function change() {
+				$("#userName").val(user.userName);
+				$("#userRealName").val(user.userRealName);
+				$("#userTel").val(user.userTel);
+			}
+
+			/* 回车键触发修改个人信息操作 */
+			$("#userTel").keyup(function(event) {
+				if (event.which === 13) {
+					changeInfo();
+				}
+			})
+
+			/* 修改个人信息 */
+			function changeInfo() {
+				var userName = $("#userName").val().trim().match(/^.{3,10}$/).toString(); //用户名
+				var userRealName = $("#userRealName").val(); //真实姓名
+				var userTel = $("#userTel").val(); //联系电话
+				if (userRealName != "") {
+					var userRealName = userRealName.trim().match(/^.{2,4}$/);
+				}
+				if (userTel != "") {
+					var userTel = userTel.trim().match(
+						/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-7|9])|(?:5[0-3|5-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1|8|9]))\d{8}$/
+					);
+				}
+				if (userName == null) {
+					layer.msg('用户名由3-10位字符组成', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else if (userResult == 0) {
+					layer.msg('用户名不可用', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else if (userRealName == null) {
+					layer.msg('真实姓名不合法', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else if (userTel == null) {
+					layer.msg('手机号码不合法', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					})
+				} else {
+					$.ajax({
+						type: 'put',
+						url: '../api/user-updateUser',
+						data: {
+							'userName': userName,
+							'userRealName': userRealName.toString(),
+							'userTel': userTel.toString()
+						},
+						success: function(data) {
+							if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+								window.location.href = '../user/user-login.html';
+							} else if (data == 1) {
+								layer.msg('修改成功', {
+									icon: 1,
+									offset: '50%',
+									time: 1500
+								})
+								// alert('修改成功');
+								window.location.reload();
+							} else {
+								layer.msg('修改失败', {
+									icon: 2,
+									offset: '50%',
+									time: 1500
+								})
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+							layer.msg('修改失败', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+							//后端返回session为空的信息则跳转到登录页面
+							if (data.responseText == 'sessionIsNull') {
+								window.location.href = '../admin/admin-login.html';
+							}
+						},
+					})
+				}
+			}
+
+			/* 异步查询用户名是否可用 */
+			$("#userName").keyup(function() {
+				var userName = $("#userName").val(); //用户名
+				if (userName == user.userName) {
+					$("#userResult").text("可用");
+					userResult = 1;
+				} else if (userName.length < 3 || userName.length > 10) {
+					$("#userResult").text("不可用");
+					userResult = 0;
+				} else if (userName.length > 0) {
+					$.ajax({
+						type: 'get',
+						url: '../api/findUserByUserName',
+						data: {
+							'userName': userName
+						},
+						success: function(data) {
+							if (data != 0) {
+								$("#userResult").text("不可用");
+								userResult = 0;
+							} else {
+								$("#userResult").text("可用");
+								userResult = 1;
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+						},
+					})
+				}
+			})
+
+			/* 回车键触发绑定宿舍操作 */
+			$("#dormitoryNo").keyup(function(event) {
+				if (event.which === 13) {
+					changeUserDormitory();
+				}
+			})
+
+			/* 绑定宿舍 */
+			function changeUserDormitory() {
+				var dormitoryNo = $("#dormitoryNo").val().trim(); //宿舍号
+				if (dormitoryNo.length < 1) {
+					dormitoryResult = 1;
+				}
+				if (dormitoryResult == 0) {
+					layer.msg('宿舍号无效', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					})
+				} else {
+					$.ajax({
+						type: 'put',
+						url: '../api/user-updateUser',
+						data: {
+							'dormitoryId': dormitoryId
+						},
+						success: function(data) {
+							if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+								window.location.href = '../user/user-login.html';
+							} else if (data == 1) {
+								layer.msg('绑定成功', {
+									icon: 1,
+									offset: '50%',
+									time: 1500
+								})
+								window.location.reload();
+							} else {
+								layer.msg('绑定失败', {
+									icon: 2,
+									offset: '50%',
+									time: 1500
+								})
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+							layer.msg('绑定失败', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+							//后端返回session为空的信息则跳转到登录页面
+							if (data.responseText == 'sessionIsNull') {
+								window.location.href = '../admin/admin-login.html';
+							}
+						},
+					})
+				}
+			}
+
+			/* 查询宿舍 */
+			$("#dormitoryNo").keyup(function() {
+				var dormitoryNo = $("#dormitoryNo").val().trim(); //宿舍号
+				if (dormitoryNo.length > 0) {
+					$.ajax({
+						type: 'get',
+						url: '../api/findDormitoryByNo',
+						data: {
+							'dormitoryNo': dormitoryNo
+						},
+						success: function(data) {
+							if (data != 0) {
+								$("#dormitoryResult").text("宿舍存在");
+								dormitoryResult = 1;
+								dormitoryId = data;
+							} else {
+								$("#dormitoryResult").text("宿舍不存在");
+								dormitoryResult = 0;
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+						},
+					})
+				}
+			})
+
+			/* 回车键触发修改密码操作 */
+			$("#confirmPass").keyup(function(event) {
+				if (event.which === 13) {
+					changeUserPassword();
+				}
+			})
+
+			/* 修改密码 */
+			function changeUserPassword() {
+				var oldPassword = $("#oldPassword").val().trim(); //旧密码
+				var newPassword = $("#newPassword").val().trim().match(/^\w{3,10}$/).toString(); //新密码
+				var confirmPass = $("#confirmPass").val().trim(); //确认密码
+				if (oldPassword.length < 1 || newPassword == null || confirmPass.length < 1) {
+					layer.msg('密码由3-10位小写字母数字下划线组成', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else if (oldPassword != user.userPassword) {
+					layer.msg('旧密码错误', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else if (newPassword == oldPassword) {
+					layer.msg('新密码不能与旧密码一致', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else if (newPassword != confirmPass) {
+					layer.msg('确认密码与新密码不一致', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else {
+					$.ajax({
+						type: 'put',
+						url: '../api/user-updateUser',
+						data: {
+							'userPassword': newPassword
+						},
+						success: function(data) {
+							if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+								window.location.href = '../user/user-login.html';
+							} else if (data == 1) {
+								layer.msg('修改成功，请重新登录', {
+									icon: 1,
+									offset: '50%',
+									time: 1500
+								});
+								window.location.href = "../user/user-login.html"; //跳转到登录页面
+							} else {
+								layer.msg('修改失败', {
+									icon: 2,
+									offset: '50%',
+									time: 1500
+								});
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+							layer.msg('修改失败', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+							if (data.responseText == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+								window.location.href = '../admin/admin-login.html';
+							}
+						},
+					})
+				}
+			}
+		</script>
+	</body>
+</html>

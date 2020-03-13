@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="Bookmark" href="/favicon.ico">
+		<link rel="Shortcut Icon" href="/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui/css/H-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/H-ui.admin.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/skin/default/skin.css" id="skin" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/style.css" />
+		<title>电费充值</title>
+	</head>
+	<body>
+		<nav class="breadcrumb">
+			<i class="Hui-iconfont">&#xe67f;</i>首页 <span class="c-gray en">&gt;</span>电费充值 <span class="c-gray en">&gt;</span>电费充值
+			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
+			 title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
+		</nav>
+		<div class="page-container">
+			<form class="form form-horizontal">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-5"><span class="c-red">*</span>宿舍号：</label>
+					<div class="formControls col-xs-8 col-sm-2">
+						<input type="text" class="input-text" value="" placeholder="纯数字编号" id="dormitoryNo" name="dormitoryNo">
+					</div>
+					<strong id="error" style="font-size:17px;"></strong>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-5"><span class="c-red">*</span>充值金额：</label>
+					<div class="formControls col-xs-8 col-sm-2">
+						<input type="text" class="input-text" value="" placeholder="1-1000" id="payAmount" name="payAmount">
+					</div>
+				</div>
+				<div class="row cl">
+					<div class="form-label col-xs-4 col-sm-7">
+						<button type="button" class="btn btn-primary radius" onclick="pay()">立即充值</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<!--_footer 作为公共模版分离出去-->
+		<script type="text/javascript" src="../static/hui/lib/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui/js/H-ui.min.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui.admin/js/H-ui.admin.js"></script>
+		<!--/_footer 作为公共模版分离出去-->
+		<!--请在下方写此页面业务相关的脚本-->
+		<script type="text/javascript" src="../static/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+		<script type="text/javascript">
+			var result = 0; //记录异步校验宿舍号结果，0：不存在，1：存在
+
+			/* 支付 */
+			function pay() {
+				var dormitoryNo = $("#dormitoryNo").val(); //宿舍号
+				var payAmount = $("#payAmount").val(); //充值金额
+				if (dormitoryNo.length < 1) {
+					layer.msg('宿舍号不能为空', {
+						icon: 2,
+						offset: '40%',
+						time: 1500
+					});
+				} else if (result == 0) {
+					layer.msg('宿舍号无效', {
+						icon: 2,
+						offset: '40%',
+						time: 1500
+					});
+				} else if (payAmount.length < 1) {
+					layer.msg('充值金额不能为空', {
+						icon: 2,
+						offset: '40%',
+						time: 1500
+					});
+				} else if (payAmount <= 0 || payAmount > 1000) {
+					layer.msg('充值金额无效', {
+						icon: 2,
+						offset: '40%',
+						time: 1500
+					});
+				} else {
+					layer.confirm('确认要充值吗？', function(index) {
+						$.ajax({
+							type: 'post',
+							url: '../api/admin-payElectricity',
+							data: {
+								'dormitoryNo': dormitoryNo,
+								'payAmount': payAmount
+							},
+							success: function(data) {
+								if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+									window.location.href = '../admin/admin-login.html';
+								} else if (data.num == 2) {
+									layer.msg('充值成功', {
+										icon: 1,
+										offset: '40%',
+										time: 1500
+									});
+									$("#dormitoryNo").val("");
+									$("#payAmount").val("");
+									$("#error").text("");
+								} else {
+									layer.msg('充值失败，' + data.error, {
+										icon: 2,
+										offset: '40%',
+										time: 1500
+									});
+								}
+							},
+							error: function(data) {
+								console.log(data.msg);
+								layer.msg('充值失败', {
+									icon: 2,
+									offset: '40%',
+									time: 1500
+								});
+								//后端返回session为空的信息则跳转到登录页面
+								if (data.responseText == 'sessionIsNull') {
+									window.location.href = '../admin/admin-login.html';
+								}
+							},
+						})
+					})
+				}
+			}
+
+			/* 查询宿舍 */
+			$("#dormitoryNo").keyup(function() {
+				var dormitoryNo = $("#dormitoryNo").val();
+				if (dormitoryNo.length > 0) {
+					$.ajax({
+						type: 'get',
+						url: '../api/findDormitoryByNo',
+						data: {
+							'dormitoryNo': dormitoryNo
+						},
+						success: function(data) {
+							if (data != "") {
+								$("#error").text("宿舍存在");
+								result = 1;
+							} else {
+								$("#error").text("宿舍不存在");
+								result = 0;
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+						},
+					})
+				}
+			})
+		</script>
+	</body>
+</html>

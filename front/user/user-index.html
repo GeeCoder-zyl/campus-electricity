@@ -1,0 +1,354 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>宿舍信息</title>
+		<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/button.css" />
+	</head>
+	<style>
+		td {
+			font-size: 20px;
+		}
+		
+		.name {
+			text-align: right;
+		}
+		
+		.modal-body {
+			text-align: center;
+		}
+		
+		.model-body input {
+			height: 30px;
+		}
+</style>
+	<body>
+		<div id="header"></div>
+		<div class="main w1200">
+			<div id="menu"></div>
+			<div id="indexInfo">
+				<div class="right">
+					<div class="tap">
+						<span>宿舍信息</span>
+					</div>
+					<div class="container">
+						<table>
+							<tr>
+								<td class="name">宿舍号：</td>
+								<td v-if="dormitory.dormitoryNo != null">{{ dormitory.dormitoryNo }}</td>
+								<td v-if="dormitory.dormitoryNo == null && error != null" style="color: red;">{{ error }}</td>
+							</tr>
+							<tr>
+								<td class="name">余额：</td>
+								<td v-if="dormitory.dormitoryBalance != null">{{ dormitory.dormitoryBalance | formatMoney }}</td>
+							</tr>
+							<tr>
+								<td class="name">送电状态：</td>
+								<td v-if="dormitory.dormitoryStatus == 0">断电</td>
+								<td v-if="dormitory.dormitoryStatus == 1">送电</td>
+							</tr>
+							<tr>
+								<td class="name">最近充值金额：</td>
+								<td v-if="pay.payAmount != null">{{ pay.payAmount | formatMoney }}</td>
+								<td v-if="dormitory.dormitoryNo != null && pay.payAmount == null && error != null" style="color: red;">{{ error }}</td>
+							</tr>
+							<tr>
+								<td class="name">最近充值时间：</td>
+								<td v-if="pay.payDate != null">{{ pay.payDate | formatDate }}</td>
+							</tr>
+							<tr>
+								<td class="name">最近充值方式：</td>
+								<td v-if="pay.payManner == 0">管理员充值</td>
+								<td v-if="pay.payManner == 1">用户充值</td>
+							</tr>
+							<tr>
+								<td class="name">最近充值人：</td>
+								<td v-if="payName.length > 0">{{ payName }}</td>
+								<td v-if="dormitory.dormitoryNo != null && pay.payAmount != null && payName.length == 0 && error != null" style="color: red;">{{ error }}</td>
+							</tr>
+						</table>
+					</div>
+					<button class="button" data-toggle="modal" data-target="#modal-payElectricity">充值电费</button>
+					<button class="button" data-toggle="modal" data-target="#modal-bindDormitory">绑定宿舍</button>
+					<button class="button" onclick="changeUserDormitory()">取消绑定</button>
+				</div>
+				<!-- 模态框（Modal） -->
+				<div class="modal fade" id="modal-payElectricity" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+				 aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+								<h4 class="modal-title" id="myModalLabel">给&nbsp;{{ dormitory.dormitoryNo }}&nbsp;宿舍充值电费</h4>
+							</div>
+							<div class="modal-body">
+								<form id="form-payElectricity">
+									<span style="font-size:20px">充值金额：</span>
+									<input id="payAmount" placeholder="1-1000">
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" onclick="pay()">支付</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+				<!-- 模态框（Modal） -->
+				<div class="modal fade" id="modal-bindDormitory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+				 aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+								<h4 class="modal-title" id="myModalLabel">绑定宿舍</h4>
+							</div>
+							<div class="modal-body">
+								<form id="form-bindDormitory">
+									<span style="font-size:20px">宿舍号：</span>
+									<input id="dormitoryNo" placeholder="纯数字编号">
+								</form>
+							</div>
+							<div>
+								<p style="font-size:15px;margin-left:170px"><strong id="dormitoryResult"></strong></p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" onclick="changeUserDormitory()">确认</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div>
+		</div>
+		<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/js/vue.js"></script>
+		<script type="text/javascript" src="../static/js/axios.min.js"></script>
+		<script type="text/javascript" src="../static/js/day.min.js"></script>
+		<script type="text/javascript" src="../static/js/accounting.min.js"></script>
+		<script>
+			/* 加载页眉和菜单DOM */
+			$("#header").load("header.html");
+			$("#menu").load("menu.html");
+
+			/* 格式化时间过滤器 */
+			Vue.filter("formatDate", function(date) {
+				return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+			});
+
+			/* 格式化金额过滤器 */
+			Vue.filter("formatMoney", function(money) {
+				return accounting.formatMoney(money, "￥", 2, ",", ".");
+			});
+
+			/* 充值电费模态框关闭时清空其内容 */
+			$("body").on("hide.bs.modal", "#modal-payElectricity", function() {
+				$('#form-payElectricity')[0].reset();
+			});
+
+			/* 绑定宿舍模态框关闭时清空其内容 */
+			$("body").on("hide.bs.modal", "#modal-bindDormitory", function() {
+				$("#dormitoryResult").text("");
+				$('#form-bindDormitory')[0].reset();
+			});
+
+			var dormitoryNo; //宿舍号
+			var dormitoryResult = 0; //记录异步校验宿舍号结果，0：不存在，1：存在
+			var dormitoryId; //宿舍ID
+
+			/* Axios获取首页数据 */
+			var vm = new Vue({
+				el: '#indexInfo',
+				data: {
+					dormitory: {},
+					pay: {},
+					payName: {},
+					error: {}
+				},
+				mounted() {
+					var that = this;
+					axios.get('../api/user-index', {
+							headers: {
+								'x-requested-with': 'XMLHttpRequest'
+							},
+						})
+						.then(function(response) {
+							if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+								window.location.href = '../user/user-login.html';
+							} else {
+								if (response.data.dormitory != null) {
+									that.dormitory = response.data.dormitory; //获取宿舍信息
+									dormitoryNo = response.data.dormitory.dormitoryNo; //获取宿舍号
+								}
+								if (response.data.pay != null) {
+									that.pay = response.data.pay; //获取充值信息
+								}
+								if (response.data.payName != null) {
+									that.payName = response.data.payName; //获取充值人
+								}
+								if (response.data.error != null) {
+									that.error = response.data.error; //获取后端返回的错误信息
+									layer.msg(response.data.error, {
+										icon: 2,
+										time: 1500
+									});
+								}
+							}
+						})
+						.catch(function(error) {
+							console.log(error);
+						});
+				}
+			})
+
+			/* 回车键触发支付操作 */
+			$("#payAmount").keyup(function(event) {
+				if (event.which === 13) {
+					pay();
+				}
+			})
+
+			/* 支付 */
+			function pay() {
+				if (dormitoryNo == null) {
+					layer.msg('未绑定宿舍', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else {
+					var payAmount = $("#payAmount").val().trim(); //充值金额
+					var orderName = "宿舍" + dormitoryNo + "的电费充值订单"; //订单名称
+					var date = new Date().format("yyyyMMddhhmmss");
+					var orderId = date + payAmount + 1; //订单号
+					if (payAmount.length < 1 || payAmount <= 0 || payAmount > 1000) {
+						layer.msg('充值金额无效', {
+							icon: 2,
+							offset: '50%',
+							time: 1500
+						});
+					} else {
+						window.location.href = "../api/user-payElectricity?orderId=" + orderId + "&payAmount=" + payAmount +
+							"&orderName=" + orderName;
+					}
+				}
+			}
+
+			/* 回车键触发绑定宿舍操作 */
+			$("#dormitoryNo").keyup(function(event) {
+				if (event.which === 13) {
+					changeUserDormitory();
+				}
+			})
+
+			/* 绑定宿舍 */
+			function changeUserDormitory() {
+				var dormitoryNo = $("#dormitoryNo").val().trim(); //宿舍号
+				if (dormitoryNo.length < 1) {
+					dormitoryResult = 1;
+				}
+				if (dormitoryResult == 0) {
+					layer.msg('宿舍号无效', {
+						icon: 2,
+						offset: '50%',
+						time: 1500
+					});
+				} else {
+					$.ajax({
+						type: 'put',
+						url: '../api/user-updateUser',
+						data: {
+							'dormitoryId': dormitoryId
+						},
+						success: function(data) {
+							if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+								window.location.href = '../user/user-login.html';
+							} else if (data == 1) {
+								layer.msg('绑定成功', {
+									icon: 1,
+									offset: '50%',
+									time: 1500
+								});
+								window.location.reload();
+							} else {
+								layer.msg('绑定失败', {
+									icon: 2,
+									offset: '50%',
+									time: 1500
+								});
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+							layer.msg('绑定失败', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+							//后端返回session为空的信息则跳转到登录页面
+							if (data.responseText == 'sessionIsNull') {
+								window.location.href = '../admin/admin-login.html';
+							}
+						},
+					})
+				}
+			}
+
+			/* 查询宿舍 */
+			$("#dormitoryNo").keyup(function() {
+				var dormitoryNo = $("#dormitoryNo").val().trim();
+				if (dormitoryNo.length > 0) {
+					$.ajax({
+						type: 'get',
+						url: '../api/findDormitoryByNo',
+						data: {
+							'dormitoryNo': dormitoryNo
+						},
+						success: function(data) {
+							if (data != 0) {
+								$("#dormitoryResult").text("宿舍存在");
+								dormitoryResult = 1;
+								dormitoryId = data;
+							} else {
+								$("#dormitoryResult").text("宿舍不存在");
+								dormitoryResult = 0;
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+						},
+					})
+				}
+			})
+
+			/* 格式化日期时间 */
+			Date.prototype.format = function(fmt) {
+				var o = {
+					"M+": this.getMonth() + 1, //月份
+					"d+": this.getDate(), //日
+					"h+": this.getHours(), //小时
+					"m+": this.getMinutes(), //分
+					"s+": this.getSeconds(), //秒
+					"q+": Math.floor((this.getMonth() + 3) / 3), //季度
+					"S": this.getMilliseconds() //毫秒
+				};
+				if (/(y+)/.test(fmt)) {
+					fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+				}
+				for (var k in o) {
+					if (new RegExp("(" + k + ")").test(fmt)) {
+						fmt = fmt.replace(
+							RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+					}
+				}
+				return fmt;
+			}
+		</script>
+	</body>
+</html>
