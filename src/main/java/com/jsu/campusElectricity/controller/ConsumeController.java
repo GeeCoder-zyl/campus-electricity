@@ -361,33 +361,31 @@ public class ConsumeController implements FinalConstant {
 			int[] createConsumeRecord(int day) throws ParseException {
 				double consumeKwh = Double.parseDouble(df2.format(random.nextDouble() * 10));// 随机产生用电量
 				double consumeAmount = Double.parseDouble(df2.format(consumeKwh * 0.5224));// 消费金额
-				dormitoryBalance = Double.parseDouble(df2.format(dormitoryBalance - consumeAmount));
 				String date2 = year + "-" + month + "-" + day;// 消费日期
 				if (consumeService.getConsumeByDormitoryIdAndDate(dormitoryId, df.parse(date2)) == null) {// 当数据库中不存在当前日期的消费记录时
-					consume.setConsumeDate(df.parse(date2));
-					consume.setConsumeKwh(consumeKwh);
-					consume.setConsumeAmount(consumeAmount);
-					consume.setConsumeBalance(dormitoryBalance);
-					consume.setDormitoryId(dormitoryId);
-					System.out.println(consume);
-					int num = consumeService.insertConsume(consume);
-					cNum += num;
-					dormitory2.setDormitoryId(dormitoryId);
-					dormitory2.setDormitoryBalance(dormitoryBalance);
-					if (dormitoryBalance <= 0) {
-						dormitory2.setDormitoryStatus(0);
+					if (dormitoryBalance > 0) {
+						dormitoryBalance = Double.parseDouble(df2.format(dormitoryBalance - consumeAmount));
+						if (dormitoryBalance <= 0) {
+							dormitory.setDormitoryStatus(0);
+						}
+						dormitory2.setDormitoryId(dormitoryId);
+						dormitory2.setDormitoryBalance(dormitoryBalance);
 						int num2 = dormitoryService.updateDormitory(dormitory2);
 						dNum += num2;
-					} else {
-						int num2 = dormitoryService.updateDormitory(dormitory2);
-						dNum += num2;
+						consume.setConsumeDate(df.parse(date2));
+						consume.setConsumeKwh(consumeKwh);
+						consume.setConsumeAmount(consumeAmount);
+						consume.setConsumeBalance(dormitoryBalance);
+						consume.setDormitoryId(dormitoryId);
+						System.out.println(consume);
+						int num = consumeService.insertConsume(consume);
+						cNum += num;
+						number[0] = cNum;
+						number[1] = dNum;
+						return number;
 					}
-					number[0] = cNum;
-					number[1] = dNum;
-					return number;
-				} else {
-					return number;
 				}
+				return number;
 			}
 		}
 
