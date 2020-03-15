@@ -1,6 +1,5 @@
 package com.jsu.campusElectricity.pojo;
 
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -29,16 +28,16 @@ public class User {
 	@TableField(value = "user_password")
 	private String userPassword;// 用户密码
 
-	@TableField(value = "user_real_name", strategy = FieldStrategy.IGNORED)
+	@TableField(value = "user_real_name")
 	private String userRealName;// 真实姓名
 
-	@TableField(value = "user_tel", strategy = FieldStrategy.IGNORED)
+	@TableField(value = "user_tel")
 	private String userTel;// 联系电话
 
 	@TableField(value = "user_status")
 	private Integer userStatus;// 用户状态（0：禁用 1：启用）
 
-	@TableField(value = "dormitory_id", strategy = FieldStrategy.IGNORED)
+	@TableField(value = "dormitory_id")
 	private Integer dormitoryId;// 宿舍ID
 
 }

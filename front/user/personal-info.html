@@ -58,7 +58,7 @@
 					<button class="button" data-toggle="modal" data-target="#modal-changeUserInfo" onclick="change()">修改个人信息</button>
 					<button class="button" data-toggle="modal" data-target="#modal-changePass">修改密码</button>
 					<button class="button" data-toggle="modal" data-target="#modal-bindDormitory">绑定宿舍</button>
-					<button class="button" onclick="changeUserDormitory()">取消绑定</button>
+					<!-- <button class="button" onclick="changeUserDormitory()">取消绑定</button> -->
 				</div>
 				<!-- 模态框（Modal） -->
 				<div class="modal fade" id="modal-changeUserInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -274,6 +274,7 @@
 							'userName': userName,
 							'userRealName': userRealName.toString(),
 							'userTel': userTel.toString()
+							// 'dormitoryId': 
 						},
 						success: function(data) {
 							if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
@@ -366,6 +367,9 @@
 						type: 'put',
 						url: '../api/user-updateUser',
 						data: {
+							// 'userName': {},
+							// 'userRealName': {},
+							// 'userTel': {},
 							'dormitoryId': dormitoryId
 						},
 						success: function(data) {
