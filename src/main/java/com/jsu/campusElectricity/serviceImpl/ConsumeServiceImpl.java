@@ -57,4 +57,74 @@ public class ConsumeServiceImpl implements ConsumeService {
 		return consumeList;
 	}
 
+	/**
+	 * 根据宿舍ID和日期查询用电量
+	 */
+	@Override
+	public double getKwhByDormitoryIdAndDate(int dormitoryId, Date consumeDate) {
+		QueryWrapper<Consume> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("dormitory_id", dormitoryId);
+		queryWrapper.eq("consume_date", consumeDate);
+		Consume consume = consumeMapper.selectOne(queryWrapper);
+		if (consume == null) {
+			return 0.0;
+		} else {
+			return consume.getConsumeKwh();
+		}
+	}
+
+	/**
+	 * 根据宿舍ID和月份查询某月用电量总和
+	 */
+	@Override
+	public double getKwhsByDormitoryIdAndMonth(int dormitoryId, int consumeYear, int consumeMonth) {
+		Double consumeKwh = consumeMapper.getKwhsByDormitoryIdAndMonth(dormitoryId, consumeYear, consumeMonth);
+		if (consumeKwh == null) {
+			return 0.0;
+		}
+		return consumeKwh;
+	}
+
+	/**
+	 * 根据宿舍ID和月份查询消费记录
+	 */
+	@Override
+	public List<Consume> listConsumesByDormitoryIdAndMonth(int dormitoryId, int consumeYear, int consumeMonth) {
+		List<Consume> consumeList = consumeMapper.listConsumesByDormitoryIdAndMonth(dormitoryId, consumeYear,
+				consumeMonth);
+		return consumeList;
+	}
+
+	/**
+	 * 根据宿舍ID和年份查询每月用电量总和
+	 */
+	@Override
+	public double getKwhsByDormitoryIdAndYear(int dormitoryId, int consumeYear, int consumeMonth) {
+		Double consumeKwh = consumeMapper.getKwhsByDormitoryIdAndYear(dormitoryId, consumeYear, consumeMonth);
+		if (consumeKwh == null) {
+			return 0.0;
+		}
+		return consumeKwh;
+	}
+
+	/**
+	 * 新增消费记录
+	 */
+	@Override
+	public int insertConsume(Consume consume) {
+		return consumeMapper.insert(consume);
+	}
+
+	/**
+	 * 根据宿舍ID和日期查询消费记录
+	 */
+	@Override
+	public Consume getConsumeByDormitoryIdAndDate(int dormitoryId, Date consumeDate) {
+		QueryWrapper<Consume> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("dormitory_id", dormitoryId);
+		queryWrapper.eq("consume_date", consumeDate);
+		Consume consume = consumeMapper.selectOne(queryWrapper);
+		return consume;
+	}
+
 }

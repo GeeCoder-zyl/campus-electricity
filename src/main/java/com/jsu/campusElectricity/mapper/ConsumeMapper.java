@@ -4,6 +4,7 @@
 package com.jsu.campusElectricity.mapper;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -40,4 +41,36 @@ public interface ConsumeMapper extends BaseMapper<Consume> {
 	 */
 	IPage<Consume> listConsumesPage(Page<Consume> page, @Param("startTime") Date startTime,
 			@Param("endTime") Date endTime, @Param("dormitoryId") Integer dormitoryId);
+
+	/**
+	 * 根据宿舍ID和月份查询某月用电量总和
+	 * 
+	 * @param dormitoryId
+	 * @param consumeYear
+	 * @param consumeMonth
+	 * @return
+	 */
+	Double getKwhsByDormitoryIdAndMonth(@Param("dormitoryId") Integer dormitoryId,
+			@Param("consumeYear") Integer consumeYear, @Param("consumeMonth") Integer consumeMonth);
+
+	/**
+	 * 根据宿舍ID和月份查询消费记录
+	 * 
+	 * @param dormitoryId
+	 * @param consumeYear
+	 * @param consumeMonth
+	 * @return
+	 */
+	List<Consume> listConsumesByDormitoryIdAndMonth(@Param("dormitoryId") Integer dormitoryId,
+			@Param("consumeYear") Integer consumeYear, @Param("consumeMonth") Integer consumeMonth);
+
+	/**
+	 * 根据宿舍ID和年份查询每月用电量总和
+	 * 
+	 * @param dormitoryId
+	 * @param consumeYear
+	 * @return
+	 */
+	Double getKwhsByDormitoryIdAndYear(@Param("dormitoryId") Integer dormitoryId,
+			@Param("consumeYear") Integer consumeYear, @Param("consumeMonth") Integer consumeMonth);
 }

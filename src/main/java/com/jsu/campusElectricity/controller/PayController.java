@@ -48,7 +48,7 @@ import com.jsu.campusElectricity.utils.FinalConstant;
  * @version: v1.0.0
  * @author: ZYL
  * @date: 2019年10月18日 下午2:23:15
- * @Description: 充值控制器
+ * @Description: 充值记录控制器
  */
 @RestController
 public class PayController implements FinalConstant {

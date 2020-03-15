@@ -3,24 +3,29 @@
  */
 package com.jsu.campusElectricity.controller;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.pojo.Consume;
+import com.jsu.campusElectricity.pojo.Dormitory;
 import com.jsu.campusElectricity.pojo.User;
 import com.jsu.campusElectricity.service.ConsumeService;
 import com.jsu.campusElectricity.service.DormitoryService;
@@ -33,7 +38,7 @@ import com.jsu.campusElectricity.utils.FinalConstant;
  * @version: v1.0.0
  * @author: ZYL
  * @date: 2019年10月17日 下午9:35:18
- * @Description: 消费控制器
+ * @Description: 消费记录控制器
  */
 @RestController
 public class ConsumeController implements FinalConstant {
@@ -310,5 +315,113 @@ public class ConsumeController implements FinalConstant {
 
 		System.out.println("管理员导出消费记录End...");
 		return null;
+	}
+
+	/**
+	 * 消费记录生成
+	 * 
+	 * @param date
+	 * @param dormitoryNo
+	 * @return
+	 * @throws ParseException
+	 */
+	@PostMapping("admin-consumeRecordCreate")
+	public int consumeRecordCreate(String date, String dormitoryNo) throws ParseException {
+		System.out.println("消费记录生成Begin...");
+		System.out.println(date + "~" + dormitoryNo);
+
+		// 获取宿舍ID
+		Dormitory dormitory = dormitoryService.getDormitoryByNo(Integer.parseInt(dormitoryNo));
+		int dormitoryId = dormitory.getDormitoryId();
+
+		// 获取年和月
+		int year = Integer.parseInt(date.substring(0, date.indexOf("-")));
+		int month = Integer.parseInt(date.substring(date.indexOf("-") + 1));
+		System.out.println(year + "~" + month);
+
+		// 获取当前日期
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		DecimalFormat df2 = new DecimalFormat("0.00");
+		Date date2 = new Date();
+		String nowDate = df.format(date2);
+		int nowMonth = Integer.parseInt(nowDate.substring(nowDate.indexOf("-") + 1, nowDate.lastIndexOf("-")));
+		int nowDay = Integer.parseInt(nowDate.substring(nowDate.lastIndexOf("-") + 1));
+
+		// 新增消费记录内部类
+		class CreateConsumeRecord {
+			Consume consume = new Consume();
+			Random random = new Random();
+			Dormitory dormitory2 = new Dormitory();
+			int cNum = 0;// 新增消费记录数量
+			int dNum = 0;// 修改宿舍数量
+			int[] number = new int[2];
+			double dormitoryBalance = dormitory.getDormitoryBalance();// 电费余额
+			// 新增消费记录方法
+
+			int[] createConsumeRecord(int day) throws ParseException {
+				double consumeKwh = Double.parseDouble(df2.format(random.nextDouble() * 10));// 随机产生用电量
+				double consumeAmount = Double.parseDouble(df2.format(consumeKwh * 0.5224));// 消费金额
+				dormitoryBalance = Double.parseDouble(df2.format(dormitoryBalance - consumeAmount));
+				String date2 = year + "-" + month + "-" + day;// 消费日期
+				if (consumeService.getConsumeByDormitoryIdAndDate(dormitoryId, df.parse(date2)) == null) {// 当数据库中不存在当前日期的消费记录时
+					consume.setConsumeDate(df.parse(date2));
+					consume.setConsumeKwh(consumeKwh);
+					consume.setConsumeAmount(consumeAmount);
+					consume.setConsumeBalance(dormitoryBalance);
+					consume.setDormitoryId(dormitoryId);
+					System.out.println(consume);
+					int num = consumeService.insertConsume(consume);
+					cNum += num;
+					dormitory2.setDormitoryId(dormitoryId);
+					dormitory2.setDormitoryBalance(dormitoryBalance);
+					if (dormitoryBalance <= 0) {
+						dormitory2.setDormitoryStatus(0);
+						int num2 = dormitoryService.updateDormitory(dormitory2);
+						dNum += num2;
+					} else {
+						int num2 = dormitoryService.updateDormitory(dormitory2);
+						dNum += num2;
+					}
+					number[0] = cNum;
+					number[1] = dNum;
+					return number;
+				} else {
+					return number;
+				}
+			}
+		}
+
+		CreateConsumeRecord ccr = new CreateConsumeRecord();
+
+		int[] number = new int[2];
+		if (month == nowMonth) {// 当月份是当前月时
+			for (int i = 1; i <= nowDay; i++) {
+				number = ccr.createConsumeRecord(i);
+			}
+		} else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {// 当月份是1、3、5、7、8、10、12时
+			for (int i = 1; i <= 31; i++) {
+				number = ccr.createConsumeRecord(i);
+			}
+		} else if (month == 4 || month == 6 || month == 9 || month == 11) {// 当月份是4、6、9、11时
+			for (int i = 1; i <= 30; i++) {
+				number = ccr.createConsumeRecord(i);
+			}
+		} else if (month == 2) {// 当月份是2时
+			GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
+			if (cal.isLeapYear(year)) {
+				for (int i = 1; i <= 29; i++) {
+					number = ccr.createConsumeRecord(i);
+				}
+			} else {
+				for (int i = 1; i <= 28; i++) {
+					number = ccr.createConsumeRecord(i);
+				}
+			}
+		}
+		System.out.println(number[0] + "条消费记录新增成功！");
+		System.out.println(number[1] + "条宿舍信息修改成功！");
+
+		System.out.println("消费记录生成End...");
+		return number[0] + number[1];
 	}
 }
