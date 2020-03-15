@@ -44,8 +44,8 @@
 				var year = date.substring(0, date.indexOf("-"));
 				var month = date.substring(date.indexOf("-") + 1);
 				var nowDate = new Date();
-				console.log(nowDate.getFullYear());
-				console.log(nowDate.getMonth() + 1);
+				console.log(year >= nowDate.getFullYear());
+				console.log(month > nowDate.getMonth());
 				if (date == '' || date.indexOf("-") == null) {
 					layer.msg('请输入正确的日期', {
 						icon: 2,
@@ -60,7 +60,7 @@
 					});
 					return false;
 				}
-				if (year >= nowDate.getYear() && month > nowDate.getMonth() + 1) {
+				if (year >= nowDate.getFullYear() && month > nowDate.getMonth() + 1) {
 					layer.msg('不能生成当前日期之后的消费记录', {
 						icon: 2,
 						time: 1500
