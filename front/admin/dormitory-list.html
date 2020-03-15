@@ -31,7 +31,7 @@
 							<option value="1">送电</option>
 						</select>
 					</span>
-					<input ref="inputDormitoryNo" type="text" placeholder="宿舍号" style="width:150px" class="input-text">
+					<input ref="inputDormitoryNo" type="text" placeholder="宿舍号" style="width:100px" class="input-text">
 					<button class="btn btn-success" @click="findDormitoryPage(1, pageSize, $refs.inputDormitoryNo.value, $refs.selectDormitoryStatus.value)"><i
 						 class="Hui-iconfont">&#xe665;</i>搜宿舍</button>
 					<button class="btn btn-success radius r" @click="findDormitoryPage(nowPage, pageSize, $refs.inputDormitoryNo.value, $refs.selectDormitoryStatus.value)">刷新数据</button>

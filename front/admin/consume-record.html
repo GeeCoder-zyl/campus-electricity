@@ -30,7 +30,7 @@
 					-
 					<input id="datemax" ref="endTime" type="text" placeholder="结束日期" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d' })"
 					 class="input-text Wdate" style="width:120px;">
-					<input ref="inputDormitoryNo" type="text" placeholder="宿舍号" style="width:150px" class="input-text">
+					<input ref="inputDormitoryNo" type="text" placeholder="宿舍号" style="width:100px" class="input-text">
 					<button class="btn btn-success" @click="findConsumesPage(1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)"><i
 						 class="Hui-iconfont">&#xe665;</i>搜索</button>
 					<button class="btn btn-success radius r" @click="findConsumesPage(nowPage, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">刷新数据</button>

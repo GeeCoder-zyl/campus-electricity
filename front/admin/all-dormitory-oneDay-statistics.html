@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui/css/H-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/H-ui.admin.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/skin/default/skin.css" id="skin" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/style.css" />
+		<title>所有宿舍某日用电量统计</title>
+	</head>
+	<body>
+		<nav class="breadcrumb">
+			<i class="Hui-iconfont">&#xe67f;</i>
+			首页 <span class="c-gray en">&gt;</span> 用电量统计 <span class="c-gray en">&gt;</span> 所有宿舍某日用电量统计
+			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
+			 title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
+		</nav>
+		<br />
+		<div class="text-c">
+			日期：<input id="datemin" type="text" placeholder="日期" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}' })"
+			 class="input-text Wdate" style="width:120px;">
+			<input id="datemax" type="text" placeholder="结束日期" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d' })"
+			 class="input-text Wdate" style="width:120px;" hidden="hidden">
+			<button class="btn btn-success" onclick="requestData()">查询</button>
+			<button class="btn btn-success radius r" onclick="requestData()" style="margin-right: 20px;">刷新数据</button>
+		</div>
+		<div class="page-container">
+			<div id="container" style="min-width:700px;height:400px"></div>
+		</div>
+		<!--_footer 作为公共模版分离出去-->
+		<script type="text/javascript" src="../static/hui/lib/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui/js/H-ui.min.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui.admin/js/H-ui.admin.js"></script>
+		<!--/_footer 作为公共模版分离出去-->
+
+		<!--请在下方写此页面业务相关的脚本-->
+		<script type="text/javascript" src="../static/hui/lib/hcharts/Highcharts/5.0.6/js/highcharts.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/hcharts/Highcharts/5.0.6/js/modules/exporting.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+		<script type="text/javascript" src="../static/js/day.min.js"></script>
+		<script type="text/javascript">
+			var chart = null; // 定义全局变量
+			
+			/* 绘制图形 */
+			$(function() {
+				chart = Highcharts.chart('container', {
+					chart: {
+						type: 'column',
+						events: {
+							load: requestData // 图表加载完毕后执行的回调函数
+						}
+					},
+					title: {
+						text: '所有宿舍某日用电量统计'
+					},
+					xAxis: {
+						lineWidth: 1
+					},
+					yAxis: {
+						min: 0,
+						title: {
+							text: '用电量（kW·h）'
+						}
+					},
+					tooltip: {
+						headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+						pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+							'<td style="padding:0"><b>{point.y:.1f} kW·h</b></td></tr>',
+						footerFormat: '</table>',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0,
+							groupPadding: 0,
+							shadow: false,
+							dataLabels: {
+								inside: true
+							}
+						}
+					},
+					series: [{
+						name: '用电量',
+						data: []
+					}]
+				});
+			});
+
+			/* 获取数据 */
+			function requestData() {
+				var date = $("#datemin").val();
+				if (date == null || date == '') {
+					date = new Date();
+				}
+				date = dayjs(date).format("YYYY-MM-DD");
+				console.log(date);
+				$.ajax({
+					type: 'get',
+					url: '../api/admin-allDormitoryOneDayStatistics',
+					data: {
+						'date': date,
+					},
+					success: function(data) {
+						console.log(data);
+						if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+							window.location.href = '../admin/admin-login.html';
+						} else if (data.error != null) {
+							layer.msg('查询失败' + data.error, {
+								icon: 2,
+								time: 1500
+							});
+						} else {
+							chart.xAxis[0].setCategories(data.dormitoryNoList);
+							chart.series[0].setData(data.consumeKwhList);
+							chart.setTitle({
+								text: '所有宿舍' + dayjs(date).format("YYYY年M月D日") + '用电量统计'
+							});
+							chart.redraw(); //刷新
+						}
+					},
+					error: function(data) {
+						console.log(data.msg);
+						layer.msg('查询失败', {
+							icon: 2,
+							time: 1500
+						});
+						//后端返回session为空的信息则跳转到登录页面
+						if (data.responseText == 'sessionIsNull') {
+							window.location.href = '../admin/admin-login.html';
+						}
+					},
+				})
+			}
+		</script>
+	</body>
+</html>
