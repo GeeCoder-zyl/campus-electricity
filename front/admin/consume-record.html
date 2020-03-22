@@ -13,11 +13,11 @@
 		<link rel="stylesheet" type="text/css" href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" />
 		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/skin/default/skin.css" id="skin" />
 		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/style.css" />
-		<title>消费记录</title>
+		<title>宿舍消费记录</title>
 	</head>
 	<body>
 		<nav class="breadcrumb">
-			首页 <span class="c-gray en">&gt;</span>消费记录 <span class="c-gray en">&gt;</span>消费记录
+			首页 <span class="c-gray en">&gt;</span>消费记录 <span class="c-gray en">&gt;</span>宿舍消费记录
 			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
 			 title="刷新页面"><i class="Hui-iconfont">&#xe68f;</i></a>
 		</nav>
@@ -50,15 +50,15 @@
 						<table class="table table-border table-bordered table-hover table-bg table-sort">
 							<thead>
 								<tr>
-									<th colspan="9" style="text-align: center;">消费记录</th>
+									<th colspan="9" style="text-align: center;">宿舍消费记录</th>
 								</tr>
 								<tr class="text-c">
 									<th>ID</th>
-									<th width="310">宿舍号</th>
-									<th width="310">日期</th>
-									<th width="310">用电量</th>
-									<th width="310">消费金额</th>
-									<th width="310">余额</th>
+									<th width="300">宿舍号</th>
+									<th width="300">日期</th>
+									<th width="300">用电量</th>
+									<th width="300">消费金额</th>
+									<th width="300">余额</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -232,7 +232,7 @@
 										if (window.navigator && window.navigator.msSaveOrOpenBlob) {
 											console.log('IE');
 											let blob = new Blob([response.data]);
-											window.navigator.msSaveOrOpenBlob(blob, '消费记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
+											window.navigator.msSaveOrOpenBlob(blob, '宿舍消费记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
 												'.xls');
 										} else {
 											/* 火狐谷歌的文件下载方式 */
@@ -241,7 +241,7 @@
 											var downloadElement = document.createElement('a');
 											var href = window.URL.createObjectURL(blob);
 											downloadElement.href = href;
-											downloadElement.download = '消费记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") + '.xls';
+											downloadElement.download = '宿舍消费记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") + '.xls';
 											document.body.appendChild(downloadElement);
 											downloadElement.click();
 											document.body.removeChild(downloadElement);

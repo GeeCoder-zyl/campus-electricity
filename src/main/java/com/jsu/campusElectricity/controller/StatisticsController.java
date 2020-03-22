@@ -115,7 +115,7 @@ public class StatisticsController implements FinalConstant {
 		System.out.println(dormitoryNoList);
 		map.put("dormitoryNoList", dormitoryNoList);
 
-		// 根据宿舍ID和月份查询用电量
+		// 根据宿舍ID和年月查询用电量
 		List<Double> consumeKwhList = new ArrayList<>();
 		for (int i = 0; i < dormitoryIdList.size(); i++) {
 			consumeKwhList.add(consumeService.getKwhsByDormitoryIdAndMonth(dormitoryIdList.get(i),
@@ -152,7 +152,7 @@ public class StatisticsController implements FinalConstant {
 		// 查询宿舍号
 		int dormitoryId = dormitoryService.getDormitoryByNo(Integer.parseInt(dormitoryNo)).getDormitoryId();
 
-		// 根据宿舍ID和月份查询消费记录
+		// 根据宿舍ID和年月查询消费记录
 		List<Consume> consumeList = new ArrayList<>();
 		consumeList = consumeService.listConsumesByDormitoryIdAndMonth(dormitoryId, Integer.parseInt(consumeYear),
 				Integer.parseInt(consumeMonth));

@@ -10,17 +10,17 @@
 			<h2>登录</h2>
 			<div id="error_box"></div>
 			<div class="input_box">
-				<input type="text" id="userName" onblur="checkUserName()" placeholder="3-10位字符" />
+				<input type="text" id="userName" onblur="checkUserName()" placeholder="用户名 (学号)" />
 			</div>
 			<div class="input_box">
-				<input type="password" id="userPassword" onblur="checkUserPassword()" placeholder="3-10位字母数字下划线" />
+				<input type="password" id="userPassword" onblur="checkUserPassword()" placeholder="密码" />
 			</div>
 			<div class="input_box">
 				<button class="login_button" onclick="userLogin()">登录</button>
 			</div>
-			<div class="input_box">
+			<!-- <div class="input_box">
 				<button class="register_button" onclick="window.location.href='../user/user-register.html'">没有账号 ？去注册</button>
-			</div>
+			</div> -->
 			<div class="input_box">
 				<a href="../admin/admin-login.html" target="_blank">管理员登录</a>
 			</div>
@@ -32,6 +32,11 @@
 			var error = document.getElementById("error_box"); //错误信息
 
 			/* 回车键触发登录操作 */
+			$("#userName").keyup(function(event) {
+				if (event.which === 13) {
+					userLogin();
+				}
+			})
 			$("#userPassword").keyup(function(event) {
 				if (event.which === 13) {
 					userLogin();
@@ -65,7 +70,7 @@
 
 			/* 检查用户名 */
 			function checkUserName() {
-				var regExp = /^.{3,10}$/; //3-10位的所有字符
+				var regExp = /^\d{1,16}$/; //1-16位数字
 				userName = $("#userName").val().trim();
 				if (userName.length < 1) {
 					$("#userName").css('border-color', '#f70606');
@@ -73,7 +78,7 @@
 					return false;
 				} else if (!regExp.test(userName)) {
 					$("#userName").css('border-color', '#f70606');
-					error.innerHTML = "用户名由3-10位字符组成";
+					error.innerHTML = "用户名由最多16位纯数字组成";
 					return false;
 				} else {
 					$("#userName").css('border-color', '#ddd');
@@ -83,7 +88,7 @@
 
 			/* 检查密码 */
 			function checkUserPassword() {
-				var regExp = /^\w{3,10}$/; //3-10位字母数字下划线
+				var regExp = /^\w{8,16}$/; //8-16位字母数字下划线
 				userPassword = $("#userPassword").val().trim();
 				if (userPassword.length < 1) {
 					$("#userPassword").css('border-color', '#f70606');
@@ -91,7 +96,7 @@
 					return false;
 				} else if (!regExp.test(userPassword)) {
 					$("#userPassword").css('border-color', '#f70606');
-					error.innerHTML = "密码由3-10位字母数字下划线组成";
+					error.innerHTML = "密码由8-16位字母数字下划线组成";
 					return false;
 				} else {
 					$("#userPassword").css('border-color', '#ddd');

@@ -356,9 +356,8 @@ public class ConsumeController implements FinalConstant {
 			int dNum = 0;// 修改宿舍数量
 			int[] number = new int[2];
 			double dormitoryBalance = dormitory.getDormitoryBalance();// 电费余额
-			// 新增消费记录方法
 
-			int[] createConsumeRecord(int day) throws ParseException {
+			int[] createConsumeRecord(int day) throws ParseException {// 新增消费记录方法
 				double consumeKwh = Double.parseDouble(df2.format(random.nextDouble() * 10));// 随机产生用电量
 				double consumeAmount = Double.parseDouble(df2.format(consumeKwh * 0.5224));// 消费金额
 				String date2 = year + "-" + month + "-" + day;// 消费日期

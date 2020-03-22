@@ -53,56 +53,8 @@ public class UserController implements FinalConstant {
 	long totalPage = 0;// 总页数
 	long total = 0;// 总条数
 
-	private static final String nameRegExp = "^.{3,10}$";// 用户名正则表达式：3-10位字符
-	private static final String passRegExp = "^\\w{3,10}$";// 密码正则表达式：3-10位字母数字下划线
-
-	/**
-	 * 用户注册
-	 * 
-	 * @param user
-	 * @param confirmPass
-	 * @return
-	 */
-	@PostMapping("/user-register")
-	public Map<Object, Object> register(User user, String confirmPass) {
-		System.out.println("用户注册Begin...");
-		System.out.println(user + "~~~" + confirmPass);
-
-		Map<Object, Object> map = new HashMap<Object, Object>();
-
-		// 用户注册输入信息验证
-		if (!user.getUserName().trim().matches(nameRegExp)) {
-			System.out.println("用户名由3-10位字符组成!");
-			map.put(REQUEST_ERROR, "用户名由3-10位字符组成!");
-			return map;
-		}
-		if (!user.getUserPassword().trim().matches(passRegExp)) {
-			System.out.println("密码由3-10位字母数字下划线组成！");
-			map.put(REQUEST_ERROR, "密码由3-10位字母数字下划线组成！");
-			return map;
-		}
-		if (!confirmPass.trim().equals(user.getUserPassword().trim())) {
-			System.out.println("两次输入的密码不一致！");
-			map.put(REQUEST_ERROR, "两次输入的密码不一致！");
-			return map;
-		}
-
-		// 用户数据库信息验证
-		if (userService.getUserByUserName(user.getUserName()) != null) {
-			System.out.println("用户名已被注册！");
-			map.put(REQUEST_ERROR, "用户名已被注册！");
-			return map;
-		}
-
-		// 将用户注册信息写入数据库
-		User user1 = new User();
-		user1.setUserName(user.getUserName()).setUserPassword(user.getUserPassword()).setUserStatus(1);
-		int num = userService.insertUser(user1);
-		System.out.println("新增" + num + "个用户成功！");
-
-		System.out.println("用户注册End...\n");
-		return null;
-	}
+	private static final String nameRegExp = "^\\d{1,16}$";// 用户名正则表达式：1-16位数字
+	private static final String passRegExp = "^\\w{8,16}$";// 密码正则表达式：8-16位字母数字下划线
 
 	/**
 	 * 用户登录
@@ -121,13 +73,13 @@ public class UserController implements FinalConstant {
 
 		// 用户登录输入信息验证
 		if (!user.getUserName().trim().matches(nameRegExp)) {
-			System.out.println("用户名由3-10位字符组成!");
-			map.put(REQUEST_ERROR, "用户名由3-10位字符组成!");
+			System.out.println("用户名由最多16位数字组成!");
+			map.put(REQUEST_ERROR, "用户名由最多16位数字组成!");
 			return map;
 		}
 		if (!user.getUserPassword().trim().matches(passRegExp)) {
-			System.out.println("密码由3-10位字母数字下划线组成！");
-			map.put(REQUEST_ERROR, "密码由3-10位字母数字下划线组成！");
+			System.out.println("密码由8-16位字母数字下划线组成！");
+			map.put(REQUEST_ERROR, "密码由8-16位字母数字下划线组成！");
 			return map;
 		}
 
@@ -316,23 +268,23 @@ public class UserController implements FinalConstant {
 		}
 		System.out.println(num + "条用户信息修改成功！");
 
-		// 将修改后的用户名写入cookie中
-		String userName = userService.getUserById(userId).getUserName();
-		Cookie[] cookie = request.getCookies();
-		for (Cookie co : cookie) {
-			if (co.getName().equals(COOKIE_USER_NAME)) {
-				co.setValue(userName);
-				co.setMaxAge(60 * 30);
-				co.setPath("/");
-				response.addCookie(co);
-
-				System.out.println("用户信息修改成功！");
-				return num;
-			}
-		}
+//		// 将修改后的用户名写入cookie中
+//		String userName = userService.getUserById(userId).getUserName();
+//		Cookie[] cookie = request.getCookies();
+//		for (Cookie co : cookie) {
+//			if (co.getName().equals(COOKIE_USER_NAME)) {
+//				co.setValue(userName);
+//				co.setMaxAge(60 * 30);
+//				co.setPath("/");
+//				response.addCookie(co);
+//
+//				System.out.println("用户信息修改成功！");
+//				return num;
+//			}
+//		}
 
 		System.out.println("用户修改个人信息End...");
-		return 0;
+		return num;
 	}
 
 	/**
@@ -643,5 +595,53 @@ public class UserController implements FinalConstant {
 		System.out.println("根据用户名查询用户信息End...");
 		return 1;
 	}
+
+//	/**
+//	 * 用户注册
+//	 * 
+//	 * @param user
+//	 * @param confirmPass
+//	 * @return
+//	 */
+//	@PostMapping("/user-register")
+//	public Map<Object, Object> register(User user, String confirmPass) {
+//		System.out.println("用户注册Begin...");
+//		System.out.println(user + "~~~" + confirmPass);
+//
+//		Map<Object, Object> map = new HashMap<Object, Object>();
+//
+//		// 用户注册输入信息验证
+//		if (!user.getUserName().trim().matches(nameRegExp)) {
+//			System.out.println("用户名由3-10位字符组成!");
+//			map.put(REQUEST_ERROR, "用户名由3-10位字符组成!");
+//			return map;
+//		}
+//		if (!user.getUserPassword().trim().matches(passRegExp)) {
+//			System.out.println("密码由3-10位字母数字下划线组成！");
+//			map.put(REQUEST_ERROR, "密码由3-10位字母数字下划线组成！");
+//			return map;
+//		}
+//		if (!confirmPass.trim().equals(user.getUserPassword().trim())) {
+//			System.out.println("两次输入的密码不一致！");
+//			map.put(REQUEST_ERROR, "两次输入的密码不一致！");
+//			return map;
+//		}
+//
+//		// 用户数据库信息验证
+//		if (userService.getUserByUserName(user.getUserName()) != null) {
+//			System.out.println("用户名已被注册！");
+//			map.put(REQUEST_ERROR, "用户名已被注册！");
+//			return map;
+//		}
+//
+//		// 将用户注册信息写入数据库
+//		User user1 = new User();
+//		user1.setUserName(user.getUserName()).setUserPassword(user.getUserPassword()).setUserStatus(1);
+//		int num = userService.insertUser(user1);
+//		System.out.println("新增" + num + "个用户成功！");
+//
+//		System.out.println("用户注册End...\n");
+//		return null;
+//	}
 
 }

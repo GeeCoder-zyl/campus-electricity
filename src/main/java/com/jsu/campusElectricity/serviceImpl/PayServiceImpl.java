@@ -69,12 +69,27 @@ public class PayServiceImpl implements PayService {
 	}
 
 	/**
-	 * 根据日期范围和宿舍号分页查询充值记录
+	 * 根据日期范围和宿舍ID分页查询充值记录
 	 */
 	@Override
 	public IPage<Pay> listPaysPage(Page<Pay> page, Date startTime, Date endTime, Integer dormitoryId) {
 		IPage<Pay> payList = payMapper.listPaysPage(page, startTime, endTime, dormitoryId);
 		return payList;
+	}
+
+	/**
+	 * 根据日期范围和管理员ID分页查询充值记录
+	 */
+	@Override
+	public IPage<Pay> listAdminPaysPage(Page<Pay> page, Date startTime, Date endTime, Integer adminId) {
+		IPage<Pay> payList = payMapper.listAdminPaysPage(page, startTime, endTime, adminId);
+		return payList;
+	}
+
+	@Override
+	public double getAdminPaysSum(Date startTime, Date endTime, Integer adminId) {
+		double paysSum = payMapper.getAdminPaysSum(startTime, endTime, adminId);
+		return paysSum;
 	}
 
 }

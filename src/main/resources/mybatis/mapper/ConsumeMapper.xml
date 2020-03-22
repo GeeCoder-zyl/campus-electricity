@@ -19,7 +19,7 @@
     select * from tb_consume where dormitory_id=#{dormitoryId} order by consume_date desc
   </select>
   
-  <!-- 根据日期范围和宿舍号分页查询消费记录 -->
+  <!-- 根据日期范围和宿舍ID分页查询消费记录 -->
   <select id="listConsumesPage" resultMap="BaseResultMap">
     select * from tb_consume 
     <where>
@@ -30,10 +30,10 @@
     and dormitory_id = #{dormitoryId}
     </if>
   	</where>
-  	order by consume_date desc
+  	order by consume_date desc,consume_kwh desc
   </select>
   
-  <!-- 根据宿舍ID和月份查询某月用电量总和 -->
+  <!-- 根据宿舍ID和年月查询某月用电量总和 -->
   <select id="getKwhsByDormitoryIdAndMonth" resultType="Double">
     select sum(consume_kwh) from tb_consume 
     <where>
@@ -46,22 +46,9 @@
   	</where>
   </select>
   
-  <!-- 根据宿舍ID和月份查询消费记录 -->
+  <!-- 根据宿舍ID和年月查询消费记录 -->
   <select id="listConsumesByDormitoryIdAndMonth" resultMap="BaseResultMap">
     select * from tb_consume 
-    <where>
-    <if test="consumeYear != null and consumeMonth != null">
-    and year(consume_date)=#{consumeYear} and month(consume_date)=#{consumeMonth}
-    </if>
-  	<if test="dormitoryId != null">
-    and dormitory_id = #{dormitoryId}
-    </if>
-  	</where>
-  </select>
-  
-  <!-- 根据宿舍ID和年份查询每月用电量总和 -->
-  <select id="getKwhsByDormitoryIdAndYear" resultType="Double">
-    select sum(consume_kwh) from tb_consume 
     <where>
     <if test="consumeYear != null and consumeMonth != null">
     and year(consume_date)=#{consumeYear} and month(consume_date)=#{consumeMonth}

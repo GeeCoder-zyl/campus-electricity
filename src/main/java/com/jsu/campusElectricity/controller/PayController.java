@@ -415,7 +415,7 @@ public class PayController implements FinalConstant {
 			System.out.println("date：" + sTime + "~~~" + eTime);
 		}
 
-		// 根据日期范围和宿舍号分页查询充值记录
+		// 根据日期范围和宿舍ID分页查询充值记录
 		IPage<Pay> iPage = payService.listPaysPage(new Page<Pay>(nowPage, pageSize), sTime, eTime, dormitoryId);
 		nowPage = iPage.getCurrent();// 当前页
 		totalPage = iPage.getPages();// 总页数
@@ -430,7 +430,7 @@ public class PayController implements FinalConstant {
 		map.put("total", total);
 		List<Pay> payList = iPage.getRecords();
 		if (payList == null || payList.size() == 0) {
-			map.put(REQUEST_ERROR, "未找到消费记录！");
+			map.put(REQUEST_ERROR, "未找到充值记录！");
 			return map;
 		}
 		System.out.println(payList);
@@ -458,7 +458,7 @@ public class PayController implements FinalConstant {
 		System.out.println("payNameList：" + payNameList);
 		map.put("payNameList", payNameList);
 
-		// 根据用户绑定的宿舍ID查询宿舍号
+		// 根据宿舍ID查询宿舍号
 		List<Integer> dormitoryNoList = new ArrayList<Integer>();
 		for (int i = 0; i < payList.size(); i++) {
 			if (payList.get(i).getDormitoryId() != null) {
@@ -476,7 +476,7 @@ public class PayController implements FinalConstant {
 	}
 
 	/**
-	 * 管理员导出充值记录
+	 * 管理员导出宿舍的充值记录
 	 * 
 	 * @param response
 	 * @param startTime
@@ -490,7 +490,7 @@ public class PayController implements FinalConstant {
 	@GetMapping("/admin-exportPaysToExcel")
 	public Map<Object, Object> exportPaysToExcel(HttpServletResponse response, String startTime, String endTime,
 			String dormitoryNo, long nowPage, long pageSize) throws Exception {
-		System.out.println("管理员导出充值记录Begin...");
+		System.out.println("管理员导出宿舍的充值记录Begin...");
 		System.out.println(startTime + "~" + endTime + "~" + dormitoryNo + "~" + nowPage + "~" + pageSize);
 
 		Map<Object, Object> map = new HashMap<Object, Object>();
@@ -515,7 +515,7 @@ public class PayController implements FinalConstant {
 			System.out.println("date：" + sTime + "~~~" + eTime);
 		}
 
-		// 根据日期范围和宿舍号分页查询充值记录
+		// 根据日期范围和宿舍ID分页查询充值记录
 		if (nowPage < 1) {
 			nowPage = 1;
 		} else if (nowPage > totalPage) {
@@ -531,7 +531,7 @@ public class PayController implements FinalConstant {
 		System.out.println("总条数：" + total);
 		List<Pay> payList = iPage.getRecords();
 		if (payList == null || payList.size() == 0) {
-			map.put(REQUEST_ERROR, "未找到消费记录！");
+			map.put(REQUEST_ERROR, "未找到充值记录！");
 			return map;
 		}
 		System.out.println(payList);
@@ -557,7 +557,7 @@ public class PayController implements FinalConstant {
 		}
 		System.out.println("payNameList：" + payNameList);
 
-		// 根据用户绑定的宿舍ID查询宿舍号
+		// 根据宿舍ID查询宿舍号
 		List<Integer> dormitoryNoList = new ArrayList<Integer>();
 		for (int i = 0; i < payList.size(); i++) {
 			if (payList.get(i).getDormitoryId() != null) {
@@ -570,8 +570,8 @@ public class PayController implements FinalConstant {
 		System.out.println(dormitoryNoList);
 
 		// 遍历充值记录并写入表格
-		String title = "消费记录";
-		String[] rowsName = new String[] { "序号", "ID", "宿舍号", "日期时间", "金额", "充值方式", "充值人名称" };
+		String title = "充值记录";
+		String[] rowsName = new String[] { "序号", "ID", "宿舍号", "日期时间", "金额", "充值方式", "充值人" };
 		List<Object[]> dataList = new ArrayList<Object[]>();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		for (int i = 0; i < payList.size(); i++) {
@@ -605,7 +605,268 @@ public class PayController implements FinalConstant {
 			return map;
 		}
 
-		System.out.println("管理员导出充值记录End...");
+		System.out.println("管理员导出宿舍的充值记录End...");
+		return null;
+	}
+
+	/**
+	 * 管理员根据日期范围和管理员名称分页查询充值记录
+	 * 
+	 * @param startTime
+	 * @param endTime
+	 * @param adminName
+	 * @param nowPage
+	 * @param pageSize
+	 * @return
+	 * @throws ParseException
+	 */
+	@GetMapping("/admin-findAdminPaysPage")
+	public Map<Object, Object> findAdminPaysPage(String startTime, String endTime, String adminName, long nowPage,
+			long pageSize) throws ParseException {
+		System.out.println("管理员根据日期范围和管理员名称分页查询充值记录Begin...");
+		System.out.println(startTime + "~" + endTime + "~" + adminName + "~" + nowPage + "~" + pageSize);
+
+		Map<Object, Object> map = new HashMap<Object, Object>();
+
+		// 返回初始数据
+		if (nowPage < 1) {
+			nowPage = 1;
+		} else if (nowPage > totalPage) {
+			nowPage = totalPage;
+		}
+		map.put("nowPage", nowPage);
+		map.put("pageSize", pageSize);
+		map.put("totalPage", totalPage);
+		map.put("total", total);
+
+		// 根据管理员名称查询管理员ID
+		Integer adminId = null;
+		if (adminName != null && !adminName.equals("")) {
+			if (adminService.getAdminByName(adminName) == null) {
+				map.put(REQUEST_ERROR, "请输入准确的管理员名称！");
+				return map;
+			}
+			adminId = adminService.getAdminByName(adminName).getAdminId();
+		}
+
+		// 格式化日期
+		Date sTime = null;// 开始日期
+		Date eTime = null;// 结束日期
+		if (startTime != null && !startTime.equals("") && endTime != null && !endTime.equals("")) {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			sTime = df.parse(startTime);
+			eTime = df.parse(endTime);
+			System.out.println("date：" + sTime + "~~~" + eTime);
+		}
+
+		// 根据日期范围和管理员名称分页查询充值记录
+		IPage<Pay> iPage = payService.listAdminPaysPage(new Page<Pay>(nowPage, pageSize), sTime, eTime, adminId);
+		nowPage = iPage.getCurrent();// 当前页
+		totalPage = iPage.getPages();// 总页数
+		long total = iPage.getTotal();// 总条数
+		System.out.println("当前页：" + nowPage);
+		System.out.println("总页数：" + totalPage);
+		System.out.println("每页条数：" + iPage.getSize());
+		System.out.println("总条数：" + total);
+		map.put("nowPage", nowPage);
+		map.put("pageSize", pageSize);
+		map.put("totalPage", totalPage);
+		map.put("total", total);
+		List<Pay> payList = iPage.getRecords();
+		if (payList == null || payList.size() == 0) {
+			map.put(REQUEST_ERROR, "未找到充值记录！");
+			return map;
+		}
+		System.out.println(payList);
+		map.put("payList", payList);
+
+		// 查询充值人名称
+		List<String> payNameList = new ArrayList<String>();
+		for (int i = 0; i < payList.size(); i++) {
+			if (adminName == null || adminName.equals("")) {
+				Admin admin = adminService.getAdminById(payList.get(i).getPayPid());
+				if (admin == null) {
+					map.put(REQUEST_ERROR, "未找到充值人名称！");
+					return map;
+				}
+				payNameList.add(i, admin.getAdminName());
+			} else {
+				payNameList.add(i, adminName);
+			}
+		}
+		System.out.println("payNameList：" + payNameList);
+		map.put("payNameList", payNameList);
+
+		// 根据宿舍ID查询宿舍号
+		List<Integer> dormitoryNoList = new ArrayList<Integer>();
+		for (int i = 0; i < payList.size(); i++) {
+			if (payList.get(i).getDormitoryId() != null) {
+				dormitoryNoList
+						.add(dormitoryService.getDormitoryById(payList.get(i).getDormitoryId()).getDormitoryNo());
+			} else {
+				dormitoryNoList.add(null);
+			}
+		}
+		System.out.println(dormitoryNoList);
+		map.put("dormitoryNoList", dormitoryNoList);
+
+		// 当选择了日期范围时才计算总金额
+		double totalAmount = 0;
+		if (startTime != null && startTime != "" && endTime != null && endTime != "") {
+			totalAmount = payService.getAdminPaysSum(sTime, eTime, adminId);
+		}
+		System.out.println(totalAmount);
+		map.put("totalAmount", totalAmount);
+
+		System.out.println("管理员根据日期范围和管理员名称分页查询充值记录End...");
+		return map;
+	}
+
+	/**
+	 * 管理员导出管理员的充值记录
+	 * 
+	 * @param response
+	 * @param startTime
+	 * @param endTime
+	 * @param adminName
+	 * @param nowPage
+	 * @param pageSize
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/admin-exportAdminPaysToExcel")
+	public Map<Object, Object> exportAdminPaysToExcel(HttpServletResponse response, String startTime, String endTime,
+			String adminName, long nowPage, long pageSize) throws Exception {
+		System.out.println("管理员导出管理员的充值记录Begin...");
+		System.out.println(startTime + "~" + endTime + "~" + adminName + "~" + nowPage + "~" + pageSize);
+
+		Map<Object, Object> map = new HashMap<Object, Object>();
+
+		// 根据管理员名称查询管理员ID
+		Integer adminId = null;
+		if (adminName != null && !adminName.equals("")) {
+			if (adminService.getAdminByName(adminName) == null) {
+				map.put(REQUEST_ERROR, "请输入准确的管理员名称！");
+				return map;
+			}
+			adminId = adminService.getAdminByName(adminName).getAdminId();
+		}
+
+		// 格式化日期
+		Date sTime = null;// 开始日期
+		Date eTime = null;// 结束日期
+		if (startTime != null && !startTime.equals("") && endTime != null && !endTime.equals("")) {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			sTime = df.parse(startTime);
+			eTime = df.parse(endTime);
+			System.out.println("date：" + sTime + "~~~" + eTime);
+		}
+
+		// 根据日期范围和管理员名称分页查询充值记录
+		IPage<Pay> iPage = payService.listAdminPaysPage(new Page<Pay>(nowPage, pageSize), sTime, eTime, adminId);
+		nowPage = iPage.getCurrent();// 当前页
+		totalPage = iPage.getPages();// 总页数
+		long total = iPage.getTotal();// 总条数
+		System.out.println("当前页：" + nowPage);
+		System.out.println("总页数：" + totalPage);
+		System.out.println("每页条数：" + iPage.getSize());
+		System.out.println("总条数：" + total);
+		List<Pay> payList = iPage.getRecords();
+		if (payList == null || payList.size() == 0) {
+			map.put(REQUEST_ERROR, "未找到充值记录！");
+			return map;
+		}
+		System.out.println(payList);
+
+		// 查询充值人名称
+		List<String> payNameList = new ArrayList<String>();
+		for (int i = 0; i < payList.size(); i++) {
+			if (adminName == null || adminName.equals("")) {
+				Admin admin = adminService.getAdminById(payList.get(i).getPayPid());
+				if (admin == null) {
+					map.put(REQUEST_ERROR, "未找到充值人名称！");
+					return map;
+				}
+				payNameList.add(i, admin.getAdminName());
+			} else {
+				payNameList.add(i, adminName);
+			}
+		}
+		System.out.println("payNameList：" + payNameList);
+
+		// 根据宿舍ID查询宿舍号
+		List<Integer> dormitoryNoList = new ArrayList<Integer>();
+		for (int i = 0; i < payList.size(); i++) {
+			if (payList.get(i).getDormitoryId() != null) {
+				dormitoryNoList
+						.add(dormitoryService.getDormitoryById(payList.get(i).getDormitoryId()).getDormitoryNo());
+			} else {
+				dormitoryNoList.add(null);
+			}
+		}
+		System.out.println(dormitoryNoList);
+
+		// 当选择了日期范围时才计算总金额
+		double totalAmount = 0;
+		if (startTime != null && startTime != "" && endTime != null && endTime != "") {
+			totalAmount = payService.getAdminPaysSum(sTime, eTime, adminId);
+		}
+		System.out.println(totalAmount);
+
+		// 遍历充值记录并写入表格
+		String title = null;// 表格标题
+		if (totalAmount == 0) {
+			title = "管理员充值记录";
+		} else {
+			title = "管理员" + adminName + "在" + startTime + "——" + endTime + "的充值记录";
+		}
+		String[] rowsName = new String[] { "序号", "ID", "宿舍号", "日期时间", "金额", "充值方式", "充值人" };
+		List<Object[]> dataList = new ArrayList<Object[]>();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		for (int i = 0; i < payList.size(); i++) {
+			Pay pay = payList.get(i);
+			Object[] objs = new Object[rowsName.length];
+			objs[0] = i;
+			objs[1] = pay.getPayId();
+			objs[2] = dormitoryNoList.get(i);
+			objs[3] = df.format(pay.getPayDate());
+			objs[4] = "￥" + pay.getPayAmount();
+			if (pay.getPayManner() == 0) {
+				objs[5] = "管理员充值";
+			} else if (pay.getPayManner() == 1) {
+				objs[5] = "用户充值";
+			}
+			objs[6] = payNameList.get(i);
+			System.out.println(objs[0] + "~" + objs[1] + "~" + objs[2] + "~" + objs[3] + "~" + objs[4] + "~" + objs[5]
+					+ "~" + objs[6]);
+			dataList.add(objs);
+		}
+		if (totalAmount > 0) {
+			Object[] obj = new Object[7];
+			obj[0] = " ";
+			obj[1] = " ";
+			obj[2] = " ";
+			obj[3] = "总计：";
+			obj[4] = "￥" + totalAmount;
+			obj[5] = " ";
+			obj[6] = " ";
+			System.out.println(obj);
+			dataList.add(obj);
+		}
+		System.out.println(dataList.size() + "行记录已写入表格！");
+		if (dataList.size() == 0) {
+			map.put(REQUEST_ERROR, "表格数据写入失败！");
+			return map;
+		}
+
+		// 导出表格
+		String fileName = ExportExcel.export(title, rowsName, dataList, response);
+		if (fileName == null) {
+			map.put(REQUEST_ERROR, "导出表格失败！");
+			return map;
+		}
+
+		System.out.println("管理员导出管理员的充值记录End...");
 		return null;
 	}
 }

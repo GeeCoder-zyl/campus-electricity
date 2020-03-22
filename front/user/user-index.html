@@ -43,11 +43,14 @@
 							</tr>
 							<tr>
 								<td class="name">余额：</td>
-								<td v-if="dormitory.dormitoryBalance != null">{{ dormitory.dormitoryBalance | formatMoney }}</td>
+								<td v-if="dormitory.dormitoryBalance != null && dormitory.dormitoryBalance >= 10">{{ dormitory.dormitoryBalance | formatMoney }}</td>
+								<td v-if="dormitory.dormitoryBalance != null && dormitory.dormitoryBalance < 10 && dormitory.dormitoryBalance > 0"
+								 style="color: orange;">{{ dormitory.dormitoryBalance | formatMoney }}</td>
+								<td v-if="dormitory.dormitoryBalance != null && dormitory.dormitoryBalance <= 0" style="color: red;">{{ dormitory.dormitoryBalance | formatMoney }}</td>
 							</tr>
 							<tr>
 								<td class="name">送电状态：</td>
-								<td v-if="dormitory.dormitoryStatus == 0">断电</td>
+								<td v-if="dormitory.dormitoryStatus == 0" style="color: red;">断电</td>
 								<td v-if="dormitory.dormitoryStatus == 1">送电</td>
 							</tr>
 							<tr>
@@ -197,6 +200,12 @@
 									layer.msg(response.data.error, {
 										icon: 2,
 										time: 1500
+									});
+								}
+								if (response.data.dormitory.dormitoryBalance < 10) { //当电费余额小于10时提示
+									layer.msg('余额已不足，请及时充值！', {
+										icon: 2,
+										time: 3000
 									});
 								}
 							}

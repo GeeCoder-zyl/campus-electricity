@@ -23,7 +23,7 @@ public class User {
 	private Integer userId;// 用户ID
 
 	@TableField(value = "user_name")
-	private String userName;// 用户名
+	private String userName;// 用户名（学号）
 
 	@TableField(value = "user_password")
 	private String userPassword;// 用户密码

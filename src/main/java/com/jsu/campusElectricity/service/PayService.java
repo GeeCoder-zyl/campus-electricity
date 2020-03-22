@@ -52,7 +52,7 @@ public interface PayService {
 	IPage<Pay> listPaysPageByDormitoryId(Page<Pay> page, int dormitoryId);
 
 	/**
-	 * 根据日期范围和宿舍号分页查询充值记录
+	 * 根据日期范围和宿舍ID分页查询充值记录
 	 * 
 	 * @param page
 	 * @param startTime
@@ -61,5 +61,27 @@ public interface PayService {
 	 * @return
 	 */
 	IPage<Pay> listPaysPage(Page<Pay> page, Date startTime, Date endTime, Integer dormitoryId);
+
+	/**
+	 * 根据日期范围和管理员ID分页查询充值记录
+	 * 
+	 * @param page
+	 * @param startTime
+	 * @param endTime
+	 * @param adminId
+	 * @return
+	 */
+	IPage<Pay> listAdminPaysPage(Page<Pay> page, Date startTime, Date endTime, Integer adminId);
+
+	/**
+	 * 根据日期范围和管理员ID计算充值金额总和
+	 * 
+	 * @param page
+	 * @param startTime
+	 * @param endTime
+	 * @param adminId
+	 * @return
+	 */
+	double getAdminPaysSum(Date startTime, Date endTime, Integer adminId);
 
 }

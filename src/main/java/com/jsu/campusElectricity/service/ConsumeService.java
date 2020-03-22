@@ -55,7 +55,7 @@ public interface ConsumeService {
 	double getKwhByDormitoryIdAndDate(int dormitoryId, Date consumeDate);
 
 	/**
-	 * 根据宿舍ID和月份查询某月用电量总和
+	 * 根据宿舍ID和年月查询某月用电量总和
 	 * 
 	 * @param dormitoryId
 	 * @param consumeDate
@@ -64,7 +64,7 @@ public interface ConsumeService {
 	double getKwhsByDormitoryIdAndMonth(int dormitoryId, int consumeYear, int consumeMonth);
 
 	/**
-	 * 根据宿舍ID和月份查询消费记录
+	 * 根据宿舍ID和年月查询消费记录
 	 * 
 	 * @param dormitoryId
 	 * @param consumeYear
@@ -72,15 +72,6 @@ public interface ConsumeService {
 	 * @return
 	 */
 	List<Consume> listConsumesByDormitoryIdAndMonth(int dormitoryId, int consumeYear, int consumeMonth);
-
-	/**
-	 * 根据宿舍ID和年份查询每月用电量总和
-	 * 
-	 * @param dormitoryId
-	 * @param consumeYear
-	 * @return
-	 */
-	double getKwhsByDormitoryIdAndYear(int dormitoryId, int consumeYear, int consumeMonth);
 
 	/**
 	 * 新增消费记录

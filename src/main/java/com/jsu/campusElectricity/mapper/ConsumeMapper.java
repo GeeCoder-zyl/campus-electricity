@@ -43,7 +43,7 @@ public interface ConsumeMapper extends BaseMapper<Consume> {
 			@Param("endTime") Date endTime, @Param("dormitoryId") Integer dormitoryId);
 
 	/**
-	 * 根据宿舍ID和月份查询某月用电量总和
+	 * 根据宿舍ID和年月查询某月用电量总和
 	 * 
 	 * @param dormitoryId
 	 * @param consumeYear
@@ -54,7 +54,7 @@ public interface ConsumeMapper extends BaseMapper<Consume> {
 			@Param("consumeYear") Integer consumeYear, @Param("consumeMonth") Integer consumeMonth);
 
 	/**
-	 * 根据宿舍ID和月份查询消费记录
+	 * 根据宿舍ID和年月查询消费记录
 	 * 
 	 * @param dormitoryId
 	 * @param consumeYear
@@ -64,13 +64,4 @@ public interface ConsumeMapper extends BaseMapper<Consume> {
 	List<Consume> listConsumesByDormitoryIdAndMonth(@Param("dormitoryId") Integer dormitoryId,
 			@Param("consumeYear") Integer consumeYear, @Param("consumeMonth") Integer consumeMonth);
 
-	/**
-	 * 根据宿舍ID和年份查询每月用电量总和
-	 * 
-	 * @param dormitoryId
-	 * @param consumeYear
-	 * @return
-	 */
-	Double getKwhsByDormitoryIdAndYear(@Param("dormitoryId") Integer dormitoryId,
-			@Param("consumeYear") Integer consumeYear, @Param("consumeMonth") Integer consumeMonth);
 }

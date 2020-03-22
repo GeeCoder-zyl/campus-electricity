@@ -17,7 +17,7 @@
 	</head>
 	<body>
 		<nav class="breadcrumb">
-			首页 <span class="c-gray en">&gt;</span>充值记录 <span class="c-gray en">&gt;</span>宿舍充值记录
+			首页 <span class="c-gray en">&gt;</span>充值记录 <span class="c-gray en">&gt;</span>管理员充值记录
 			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
 			 title="刷新页面"><i class="Hui-iconfont">&#xe68f;</i></a>
 		</nav>
@@ -30,19 +30,19 @@
 					-
 					<input id="datemax" ref="endTime" type="text" placeholder="结束日期" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d' })"
 					 class="input-text Wdate" style="width:120px;">
-					<input ref="inputDormitoryNo" type="text" placeholder="宿舍号" style="width:100px" class="input-text">
-					<button class="btn btn-success" @click="findPaysPage(1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)"><i
+					<input ref="adminName" type="text" placeholder="管理员名称" style="width:100px" class="input-text">
+					<button class="btn btn-success" @click="findAdminPaysPage(1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)"><i
 						 class="Hui-iconfont">&#xe665;</i>搜索</button>
-					<button class="btn btn-success radius r" @click="findPaysPage(nowPage, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">刷新数据</button>
+					<button class="btn btn-success radius r" @click="findAdminPaysPage(nowPage, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">刷新数据</button>
 				</div>
 				<div class="cl pd-5 bg-1 bk-gray mt-20">
 					<span class="r" style="font-size:15px;">共有数据：<strong>{{ total }}</strong> 条，每页显示：<strong>{{ pageSize }} 条</strong></span>
 				</div>
 				<div>
 					<span class="r">
-						<a class="btn btn-primary radius" @click="exportPaysToExcel(1, total, total, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">导出所有数据</a>
+						<a class="btn btn-primary radius" @click="exportAdminPaysToExcel(1, total, total, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">导出所有数据</a>
 						&nbsp;
-						<a class="btn btn-primary radius" @click="exportPaysToExcel(nowPage, pageSize, total, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">导出本页数据</a>
+						<a class="btn btn-primary radius" v-if="totalAmount <= 0" @click="exportAdminPaysToExcel(nowPage, pageSize, total, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">导出本页数据</a>
 					</span>
 				</div>
 				<div class="mt-20">
@@ -50,7 +50,7 @@
 						<table class="table table-border table-bordered table-hover table-bg table-sort">
 							<thead>
 								<tr>
-									<th colspan="9" style="text-align: center;">宿舍充值记录</th>
+									<th colspan="9" style="text-align: center;">管理员充值记录</th>
 								</tr>
 								<tr class="text-c">
 									<th>ID</th>
@@ -72,11 +72,16 @@
 									<td>{{ payNameList[index] }}</td>
 								</tr>
 							</tbody>
+							<thead>
+								<tr class="text-c" v-if="totalAmount > 0">
+									<th colspan="6">总计&nbsp;&nbsp;&nbsp;日期范围：{{ startTime }} —— {{ endTime }}&nbsp;&nbsp;金额：{{ totalAmount | formatMoney }}</th>
+								</tr>
+							</thead>
 						</table>
 						<div v-if="total != null && total != 0" class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
 							每页显示
 							<span class="select-box inline">
-								<select id="selectPageSize" ref="selectPageSize" class="select" @change="findPaysPage(1, $refs.selectPageSize.value, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">
+								<select id="selectPageSize" ref="selectPageSize" class="select" @change="findAdminPaysPage(1, $refs.selectPageSize.value, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">
 									<option value="5">5</option>
 									<option value="10">10</option>
 									<option value="25">25</option>
@@ -85,15 +90,15 @@
 							</span>
 							条&nbsp;&nbsp;&nbsp;
 							<a class="paginate_button first disabled" aria-controls="DataTables_Table_0" data-dt-idx="0" tabindex="0" id="firstPage"
-							 @click="findPaysPage(1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">首页</a>
+							 @click="findAdminPaysPage(1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">首页</a>
 							<a class="paginate_button previous disabled" aria-controls="DataTables_Table_0" data-dt-idx="1" tabindex="0" id="previousPage"
-							 @click="findPaysPage(nowPage-1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">上一页</a>
+							 @click="findAdminPaysPage(nowPage-1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">上一页</a>
 							<span><a class="paginate_button current" aria-controls="DataTables_Table_0" data-dt-idx="2" tabindex="0">{{ nowPage }}
 									/ {{ totalPage }}</a></span>
 							<a class="paginate_button next disabled" aria-controls="DataTables_Table_0" data-dt-idx="3" tabindex="0" id="nextPage"
-							 @click="findPaysPage(nowPage+1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">下一页</a>
+							 @click="findAdminPaysPage(nowPage+1, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">下一页</a>
 							<a class="paginate_button last disabled" aria-controls="DataTables_Table_0" data-dt-idx="4" tabindex="0" id="lastPage"
-							 @click="findPaysPage(totalPage, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.inputDormitoryNo.value)">尾页</a>
+							 @click="findAdminPaysPage(totalPage, pageSize, $refs.startTime.value, $refs.endTime.value, $refs.adminName.value)">尾页</a>
 						</div>
 					</div>
 				</div>
@@ -124,6 +129,8 @@
 				return accounting.formatMoney(money, "￥", 2, ",", ".");
 			});
 
+			var totalAmount;
+
 			/* Axios获取充值记录数据 */
 			var vm = new Vue({
 				el: '#payRecord',
@@ -135,26 +142,30 @@
 					pageSize: {}, //每页条数
 					totalPage: {}, //总页数
 					total: {}, //总条数
+					startTime: {}, //开始时间
+					endTime: {}, //结束时间
+					totalAmount: {}, //总金额
 				},
 				mounted() { //在vue实例挂载完毕（页面加载完毕）时调用Axios方法
-					this.findPaysPage(1, 5, null, null, null);
+					this.findAdminPaysPage(1, 5, null, null, null);
 				},
 				methods: { //Axios数据加载方法
-					findPaysPage: function(nowPage, pageSize, startTime, endTime, dormitoryNo) {
+					findAdminPaysPage: function(nowPage, pageSize, startTime, endTime, adminName) {
 						var that = this; //this指向vm
-						axios.get('../api/admin-findPaysPage', {
+						axios.get('../api/admin-findAdminPaysPage', {
 								params: {
 									nowPage: nowPage,
 									pageSize: pageSize,
 									startTime: startTime,
 									endTime: endTime,
-									dormitoryNo: dormitoryNo
+									adminName: adminName
 								},
 								headers: {
 									'x-requested-with': 'XMLHttpRequest'
 								},
 							})
 							.then(function(response) {
+								console.log(response.data);
 								if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
 									window.location.href = '../admin/admin-login.html';
 								} else {
@@ -165,6 +176,10 @@
 									that.pageSize = response.data.pageSize; //获取每页条数
 									that.totalPage = response.data.totalPage; //获取总页数
 									that.total = response.data.total; //获取总条数
+									that.startTime = startTime; //获取开始日期
+									that.endTime = endTime; //获取结束日期
+									that.totalAmount = response.data.totalAmount; //获取总金额
+									totalAmount = response.data.totalAmount;
 									if (response.data.error != null) {
 										layer.msg(response.data.error, {
 											icon: 2,
@@ -179,7 +194,7 @@
 					},
 
 					/* 导出充值记录 */
-					exportPaysToExcel: function(nowPage, pageSize, total, startTime, endTime, dormitoryNo) {
+					exportAdminPaysToExcel: function(nowPage, pageSize, total, startTime, endTime, adminName) {
 						var that = this; //this指向vm
 						var hint; //提示信息
 						if (total == 0) {
@@ -195,13 +210,13 @@
 							hint = '确认要导出本页数据吗？';
 						}
 						layer.confirm(hint, function() {
-							axios.get('../api/admin-exportPaysToExcel', {
+							axios.get('../api/admin-exportAdminPaysToExcel', {
 									params: {
 										nowPage: nowPage,
 										pageSize: pageSize,
 										startTime: startTime,
 										endTime: endTime,
-										dormitoryNo: dormitoryNo
+										adminName: adminName
 									},
 									headers: {
 										'x-requested-with': 'XMLHttpRequest'
@@ -235,8 +250,16 @@
 										if (window.navigator && window.navigator.msSaveOrOpenBlob) {
 											console.log('IE');
 											let blob = new Blob([response.data]);
-											window.navigator.msSaveOrOpenBlob(blob, '宿舍充值记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
-												'.xls');
+											if (totalAmount == 0) {
+												window.navigator.msSaveOrOpenBlob(blob, '管理员充值记录_' +
+													dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
+													'.xls');
+											} else {
+												window.navigator.msSaveOrOpenBlob(blob, '管理员' + adminName + '在' + startTime + '——' + endTime +
+													'的充值记录_' +
+													dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
+													'.xls');
+											}
 										} else {
 											/* 火狐谷歌的文件下载方式 */
 											console.log('Firefox/Chrome');
@@ -244,7 +267,14 @@
 											var downloadElement = document.createElement('a');
 											var href = window.URL.createObjectURL(blob);
 											downloadElement.href = href;
-											downloadElement.download = '宿舍充值记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") + '.xls';
+											if (totalAmount == 0) {
+												downloadElement.download = '管理员充值记录_' + dayjs(new Date).format(
+													"YYYY-MM-DD hh：mm：ss") + '.xls';
+											} else {
+												downloadElement.download = '管理员' + adminName + '在' + startTime + '——' + endTime + '的充值记录_' + dayjs(
+													new Date).format(
+													"YYYY-MM-DD hh：mm：ss") + '.xls';
+											}
 											document.body.appendChild(downloadElement);
 											downloadElement.click();
 											document.body.removeChild(downloadElement);

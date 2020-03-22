@@ -19,7 +19,7 @@
     select * from tb_pay where dormitory_id=#{dormitoryId} order by pay_date desc
   </select>
   
-  <!-- 根据日期范围和宿舍号分页查询充值记录 -->
+  <!-- 根据日期范围和宿舍ID分页查询充值记录 -->
   <select id="listPaysPage" resultMap="BaseResultMap">
     select * from tb_pay 
     <where>
@@ -31,5 +31,34 @@
     </if>
   	</where>
   	order by pay_date desc
+  </select>
+  
+  <!-- 根据日期范围和管理员ID分页查询充值记录 -->
+  <select id="listAdminPaysPage" resultMap="BaseResultMap">
+    select * from tb_pay 
+    <where>
+    and pay_manner = 0
+    <if test="startTime != null and endTime != null">
+    and pay_date between DATE_FORMAT(#{startTime},'%Y-%m-%d') and DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+  	<if test="adminId != null">
+    and pay_pid = #{adminId}
+    </if>
+  	</where>
+  	order by pay_date desc
+  </select>
+  
+  <!-- 根据日期范围和管理员ID计算充值金额总和 -->
+  <select id="getAdminPaysSum" resultType="Double">
+    select sum(pay_amount) from tb_pay 
+    <where>
+    and pay_manner = 0
+    <if test="startTime != null and endTime != null">
+    and pay_date between DATE_FORMAT(#{startTime},'%Y-%m-%d') and DATE_FORMAT(#{endTime},'%Y-%m-%d')
+    </if>
+  	<if test="adminId != null">
+    and pay_pid = #{adminId}
+    </if>
+  	</where>
   </select>
 </mapper>

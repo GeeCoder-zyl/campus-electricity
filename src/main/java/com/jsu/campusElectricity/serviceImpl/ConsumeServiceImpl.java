@@ -74,7 +74,7 @@ public class ConsumeServiceImpl implements ConsumeService {
 	}
 
 	/**
-	 * 根据宿舍ID和月份查询某月用电量总和
+	 * 根据宿舍ID和年月查询某月用电量总和
 	 */
 	@Override
 	public double getKwhsByDormitoryIdAndMonth(int dormitoryId, int consumeYear, int consumeMonth) {
@@ -86,25 +86,13 @@ public class ConsumeServiceImpl implements ConsumeService {
 	}
 
 	/**
-	 * 根据宿舍ID和月份查询消费记录
+	 * 根据宿舍ID和年月查询消费记录
 	 */
 	@Override
 	public List<Consume> listConsumesByDormitoryIdAndMonth(int dormitoryId, int consumeYear, int consumeMonth) {
 		List<Consume> consumeList = consumeMapper.listConsumesByDormitoryIdAndMonth(dormitoryId, consumeYear,
 				consumeMonth);
 		return consumeList;
-	}
-
-	/**
-	 * 根据宿舍ID和年份查询每月用电量总和
-	 */
-	@Override
-	public double getKwhsByDormitoryIdAndYear(int dormitoryId, int consumeYear, int consumeMonth) {
-		Double consumeKwh = consumeMapper.getKwhsByDormitoryIdAndYear(dormitoryId, consumeYear, consumeMonth);
-		if (consumeKwh == null) {
-			return 0.0;
-		}
-		return consumeKwh;
 	}
 
 	/**
