@@ -49,7 +49,7 @@
 				if (checkUserName() && checkUserPassword()) {
 					$.ajax({
 						type: 'post',
-						url: '../api/user-login',
+						url: '../api/user/login',
 						data: {
 							'userName': userName,
 							'userPassword': userPassword

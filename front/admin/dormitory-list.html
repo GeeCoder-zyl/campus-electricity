@@ -245,7 +245,7 @@
 					/* 根据宿舍号和送电状态分页模糊查询宿舍信息 */
 					findDormitoryPage: function(nowPage, pageSize, inputDormitoryNo, selectDormitoryStatus) {
 						var that = this; //this指向vm
-						axios.get('../api/admin-findDormitorysPage', {
+						axios.get('../api/admin/findDormitorysPage', {
 								params: {
 									nowPage: nowPage, //当前页
 									pageSize: pageSize, //每页条数
@@ -297,7 +297,11 @@
 							hint = '确认要导出本页数据吗？';
 						}
 						layer.confirm(hint, function() {
-							axios.get('../api/admin-exportDormitorysToExcel', {
+							layer.msg('正在导出,请稍后...', {
+								icon: 1,
+								time: false
+							});
+							axios.get('../api/admin/exportDormitorysToExcel', {
 									params: {
 										nowPage: nowPage,
 										pageSize: pageSize,
@@ -369,7 +373,7 @@
 						layer.confirm('确认要删除吗？', function() {
 							$.ajax({
 								type: 'delete',
-								url: '../api/admin-delDormitoryById',
+								url: '../api/admin/delDormitoryById',
 								dataType: 'json',
 								data: {
 									'dormitoryId': dormitoryId
@@ -424,7 +428,7 @@
 						layer.confirm(hint, function() {
 							$.ajax({
 								type: 'put',
-								url: '../api/admin-updateDormitory',
+								url: '../api/admin/updateDormitory',
 								dataType: 'json',
 								data: {
 									'dormitoryId': dormitoryId,
@@ -484,7 +488,7 @@
 							layer.confirm('确认要添加吗？', function() {
 								$.ajax({
 									type: 'post',
-									url: '../api/admin-addDormitory',
+									url: '../api/admin/addDormitory',
 									dataType: 'json',
 									data: {
 										'dormitoryNo': dormitoryNo,
@@ -546,7 +550,7 @@
 							layer.confirm('确认要修改吗？', function() {
 								$.ajax({
 									type: 'put',
-									url: '../api/admin-updateDormitory',
+									url: '../api/admin/updateDormitory',
 									dataType: 'json',
 									data: {
 										'dormitoryId': dormitoryId,

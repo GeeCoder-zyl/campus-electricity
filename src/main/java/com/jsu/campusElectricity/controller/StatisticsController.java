@@ -42,7 +42,7 @@ public class StatisticsController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@GetMapping("/admin-allDormitoryOneDayStatistics")
+	@GetMapping("/admin/allDormitoryOneDayStatistics")
 	public Map<Object, Object> allDormitoryOneDayStatistics(String date) throws ParseException {
 		System.out.println("所有宿舍某日用电量统计Begin...");
 		System.out.println(date);
@@ -91,7 +91,7 @@ public class StatisticsController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@GetMapping("/admin-allDormitoryOneMonthStatistics")
+	@GetMapping("/admin/allDormitoryOneMonthStatistics")
 	public Map<Object, Object> allDormitoryOneMonthStatistics(String consumeYear, String consumeMonth)
 			throws ParseException {
 		System.out.println("所有宿舍某月用电量统计Begin...");
@@ -141,7 +141,7 @@ public class StatisticsController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@GetMapping("/admin-aDormitoryInMonthStatistics")
+	@GetMapping("/admin/aDormitoryInMonthStatistics")
 	public Map<Object, Object> aDormitoryInMonthStatistics(String dormitoryNo, String consumeYear, String consumeMonth)
 			throws ParseException {
 		System.out.println("某宿舍某月内用电量统计Begin...");
@@ -187,7 +187,7 @@ public class StatisticsController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@GetMapping("/admin-aDormitoryInYearStatistics")
+	@GetMapping("/admin/aDormitoryInYearStatistics")
 	public Map<Object, Object> aDormitoryInYearStatistics(String dormitoryNo, String consumeYear)
 			throws ParseException {
 		System.out.println("某宿舍某年内用电量统计Begin...");

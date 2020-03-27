@@ -85,7 +85,7 @@
 				if (checkAdminName() && checkAdminPassword() && checkValidateCode()) {
 					$.ajax({
 						type: 'post',
-						url: '../api/admin-login',
+						url: '../api/admin/login',
 						data: {
 							'adminName': adminName,
 							'adminPassword': adminPassword,

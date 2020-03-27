@@ -70,7 +70,7 @@ public class DormitoryContrller implements FinalConstant {
 	 * @param dormitory
 	 * @return
 	 */
-	@GetMapping("/admin-findDormitorysPage")
+	@GetMapping("/admin/findDormitorysPage")
 	public Map<Object, Object> findDormitorysPage(Dormitory dormitory, long nowPage, long pageSize) {
 		System.out.println("分页模糊查询宿舍信息Begin...");
 		System.out.println(nowPage + "~" + pageSize + "~" + dormitory);
@@ -122,7 +122,7 @@ public class DormitoryContrller implements FinalConstant {
 	 * @return
 	 * @throws Exception
 	 */
-	@GetMapping("admin-exportDormitorysToExcel")
+	@GetMapping("admin/exportDormitorysToExcel")
 	public Map<Object, Object> exportDormitorysToExcel(HttpServletResponse response, Dormitory dormitory, long nowPage,
 			long pageSize) throws Exception {
 		System.out.println("导出宿舍信息Begin...");
@@ -190,7 +190,7 @@ public class DormitoryContrller implements FinalConstant {
 	 * @param dormitoryId
 	 * @return
 	 */
-	@DeleteMapping("/admin-delDormitoryById")
+	@DeleteMapping("/admin/delDormitoryById")
 	public int delDormitoryById(Integer dormitoryId) {
 		System.out.println("根据宿舍ID删除宿舍Begin...");
 		System.out.println(dormitoryId);
@@ -211,7 +211,7 @@ public class DormitoryContrller implements FinalConstant {
 	 * @param dormitory
 	 * @return
 	 */
-	@PutMapping("/admin-updateDormitory")
+	@PutMapping("/admin/updateDormitory")
 	public int updateDormitory(Dormitory dormitory) {
 		System.out.println("修改宿舍信息Begin...");
 		System.out.println(dormitory);
@@ -232,7 +232,7 @@ public class DormitoryContrller implements FinalConstant {
 	 * @param dormitory
 	 * @return
 	 */
-	@PostMapping("/admin-addDormitory")
+	@PostMapping("/admin/addDormitory")
 	public int addDormitory(Dormitory dormitory) {
 		System.out.println("添加宿舍Begin...");
 		System.out.println(dormitory);

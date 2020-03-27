@@ -176,7 +176,7 @@
 				},
 				mounted() {
 					var that = this;
-					axios.get('../api/user-index', {
+					axios.get('../api/user/index', {
 							headers: {
 								'x-requested-with': 'XMLHttpRequest'
 							},
@@ -243,7 +243,7 @@
 							time: 1500
 						});
 					} else {
-						window.location.href = "../api/user-payElectricity?orderId=" + orderId + "&payAmount=" + payAmount +
+						window.location.href = "../api/user/payElectricity?orderId=" + orderId + "&payAmount=" + payAmount +
 							"&orderName=" + orderName;
 					}
 				}
@@ -271,7 +271,7 @@
 				} else {
 					$.ajax({
 						type: 'put',
-						url: '../api/user-updateUser',
+						url: '../api/user/updateUser',
 						data: {
 							'dormitoryId': dormitoryId
 						},
@@ -284,7 +284,9 @@
 									offset: '50%',
 									time: 1500
 								});
-								window.location.reload();
+								setTimeout(function() {
+									window.location.reload();
+								}, 1000);
 							} else {
 								layer.msg('绑定失败', {
 									icon: 2,

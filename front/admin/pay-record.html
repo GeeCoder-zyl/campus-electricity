@@ -142,7 +142,7 @@
 				methods: { //Axios数据加载方法
 					findPaysPage: function(nowPage, pageSize, startTime, endTime, dormitoryNo) {
 						var that = this; //this指向vm
-						axios.get('../api/admin-findPaysPage', {
+						axios.get('../api/admin/findPaysPage', {
 								params: {
 									nowPage: nowPage,
 									pageSize: pageSize,
@@ -195,7 +195,11 @@
 							hint = '确认要导出本页数据吗？';
 						}
 						layer.confirm(hint, function() {
-							axios.get('../api/admin-exportPaysToExcel', {
+							layer.msg('正在导出,请稍后...', {
+								icon: 1,
+								time: false
+							});
+							axios.get('../api/admin/exportPaysToExcel', {
 									params: {
 										nowPage: nowPage,
 										pageSize: pageSize,

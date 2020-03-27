@@ -45,7 +45,7 @@
 				if (checkUserName() && checkUserPassword() && checkConfirmPass()) {
 					$.ajax({
 						type: 'post',
-						url: '../api/user-register',
+						url: '../api/user/register',
 						data: {
 							'userName': userName,
 							'userPassword': userPassword,

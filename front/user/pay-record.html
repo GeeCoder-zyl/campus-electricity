@@ -116,7 +116,7 @@
 				methods: { //Axios数据加载方法
 					findPaysPageByDormitoryId: function(nowPage, pageSize) {
 						var that = this; //this指向vm
-						axios.get('../api/user-findPaysPageByDormitoryId', {
+						axios.get('../api/user/findPaysPageByDormitoryId', {
 								params: {
 									nowPage: nowPage,
 									pageSize: pageSize

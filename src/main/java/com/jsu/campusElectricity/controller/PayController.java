@@ -73,7 +73,7 @@ public class PayController implements FinalConstant {
 	 * @param nowPage
 	 * @return
 	 */
-	@GetMapping("/user-findPaysPageByDormitoryId")
+	@GetMapping("/user/findPaysPageByDormitoryId")
 	public Map<Object, Object> findPaysPageByDormitoryId(HttpSession session, long nowPage, long pageSize) {
 		System.out.println("根据宿舍ID分页查询充值记录Begin...");
 		System.out.println(nowPage);
@@ -157,7 +157,7 @@ public class PayController implements FinalConstant {
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping("/user-payElectricity")
+	@RequestMapping("/user/payElectricity")
 	public String pay(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		System.out.println("用户充值电费（支付宝沙箱支付）Begin...");
 
@@ -214,7 +214,7 @@ public class PayController implements FinalConstant {
 	 * @throws UnsupportedEncodingException
 	 * @throws AlipayApiException
 	 */
-	@RequestMapping("/user-successPay")
+	@RequestMapping("/user/successPay")
 	public String successPay(HttpSession session, HttpServletRequest request)
 			throws UnsupportedEncodingException, AlipayApiException {
 		System.out.println("充值成功异步处理Begin...");
@@ -316,7 +316,7 @@ public class PayController implements FinalConstant {
 	 * @return
 	 * @return
 	 */
-	@PostMapping("/admin-payElectricity")
+	@PostMapping("/admin/payElectricity")
 	public Map<Object, Object> payElectricity(HttpSession session, int dormitoryNo, double payAmount) {
 		System.out.println("管理员充值电费Begin...");
 		System.out.println(dormitoryNo + "~~~" + payAmount);
@@ -376,7 +376,7 @@ public class PayController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@GetMapping("/admin-findPaysPage")
+	@GetMapping("/admin/findPaysPage")
 	public Map<Object, Object> findPaysPage(String startTime, String endTime, String dormitoryNo, long nowPage,
 			long pageSize) throws ParseException {
 		System.out.println("管理员根据日期范围和宿舍号分页查询充值记录Begin...");
@@ -487,7 +487,7 @@ public class PayController implements FinalConstant {
 	 * @return
 	 * @throws Exception
 	 */
-	@GetMapping("/admin-exportPaysToExcel")
+	@GetMapping("/admin/exportPaysToExcel")
 	public Map<Object, Object> exportPaysToExcel(HttpServletResponse response, String startTime, String endTime,
 			String dormitoryNo, long nowPage, long pageSize) throws Exception {
 		System.out.println("管理员导出宿舍的充值记录Begin...");
@@ -620,7 +620,7 @@ public class PayController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@GetMapping("/admin-findAdminPaysPage")
+	@GetMapping("/admin/findAdminPaysPage")
 	public Map<Object, Object> findAdminPaysPage(String startTime, String endTime, String adminName, long nowPage,
 			long pageSize) throws ParseException {
 		System.out.println("管理员根据日期范围和管理员名称分页查询充值记录Begin...");
@@ -734,7 +734,7 @@ public class PayController implements FinalConstant {
 	 * @return
 	 * @throws Exception
 	 */
-	@GetMapping("/admin-exportAdminPaysToExcel")
+	@GetMapping("/admin/exportAdminPaysToExcel")
 	public Map<Object, Object> exportAdminPaysToExcel(HttpServletResponse response, String startTime, String endTime,
 			String adminName, long nowPage, long pageSize) throws Exception {
 		System.out.println("管理员导出管理员的充值记录Begin...");

@@ -247,7 +247,7 @@
 							});
 						} else {
 							var that = this; //this指向vm
-							axios.get('../api/admin-findUsersPage', {
+							axios.get('../api/admin/findUsersPage', {
 									params: {
 										nowPage: nowPage, //当前页
 										pageSize: pageSize, //每页条数
@@ -299,7 +299,11 @@
 							hint = '确认要导出本页数据吗？';
 						}
 						layer.confirm(hint, function() {
-							axios.get('../api/admin-exportUsersToExcel', {
+							layer.msg('正在导出,请稍后...', {
+								icon: 1,
+								time: false
+							});
+							axios.get('../api/admin/exportUsersToExcel', {
 									params: {
 										nowPage: nowPage,
 										pageSize: pageSize,
@@ -372,7 +376,7 @@
 						layer.confirm('确认要删除吗？', function() {
 							$.ajax({
 								type: 'delete',
-								url: '../api/admin-delUserById',
+								url: '../api/admin/delUserById',
 								dataType: 'json',
 								data: {
 									'userId': userId
@@ -420,7 +424,7 @@
 						layer.confirm('确认要' + action + '吗？', function() {
 							$.ajax({
 								type: 'put',
-								url: '../api/admin-updateUserByAdmin',
+								url: '../api/admin/updateUserByAdmin',
 								dataType: 'json',
 								data: {
 									'userId': userId,
@@ -520,7 +524,7 @@
 							layer.confirm('确认要修改吗？', function() {
 								$.ajax({
 									type: 'put',
-									url: '../api/admin-updateUserByAdmin',
+									url: '../api/admin/updateUserByAdmin',
 									dataType: 'json',
 									data: {
 										'userId': editUserId,
@@ -575,7 +579,7 @@
 							layer.confirm('确认要添加吗？', function() {
 								$.ajax({
 									type: 'post',
-									url: '../api/admin-addUser',
+									url: '../api/admin/addUser',
 									dataType: 'json',
 									data: {
 										'userName': editUserName,

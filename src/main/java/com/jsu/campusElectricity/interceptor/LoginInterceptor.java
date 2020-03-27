@@ -36,8 +36,8 @@ public class LoginInterceptor implements HandlerInterceptor, FinalConstant {
 		String req = request.getServletPath();// 请求的方法
 		System.out.println("请求的方法：" + req);
 		String reqObject = null;// 发起请求的对象
-		if (req.indexOf("-") > 0) {
-			reqObject = req.substring(req.indexOf("/") + 1, req.indexOf("-"));
+		if (req.lastIndexOf("/") > 0) {
+			reqObject = req.substring(req.indexOf("/") + 1, req.lastIndexOf("/"));
 			System.out.println("发起请求的对象：" + reqObject);
 		}
 		if (reqObject != null && reqObject != "") {

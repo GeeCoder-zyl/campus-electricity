@@ -64,7 +64,7 @@ public class UserController implements FinalConstant {
 	 * @param user
 	 * @return
 	 */
-	@PostMapping("/user-login")
+	@PostMapping("/user/login")
 	public Map<Object, Object> login(HttpSession session, HttpServletResponse response, User user) {
 		System.out.println("用户登录Begin...");
 		System.out.println(user);
@@ -123,7 +123,7 @@ public class UserController implements FinalConstant {
 	 * @param response
 	 * @return
 	 */
-	@DeleteMapping("/user-logOut")
+	@DeleteMapping("/user/logOut")
 	public Map<Object, Object> logOut(HttpSession session) {
 		System.out.println("用户退出登录Begin...");
 
@@ -146,7 +146,7 @@ public class UserController implements FinalConstant {
 	 * @param session
 	 * @return
 	 */
-	@GetMapping("/user-index")
+	@GetMapping("/user/index")
 	public Map<Object, Object> index(HttpSession session) {
 		System.out.println("用户主页信息查询Begin...");
 
@@ -211,7 +211,7 @@ public class UserController implements FinalConstant {
 	 * @param session
 	 * @return
 	 */
-	@GetMapping("/user-personalInfo")
+	@GetMapping("/user/personalInfo")
 	public Map<Object, Object> personalInfo(HttpSession session) {
 		System.out.println("个人信息查询Begin...");
 
@@ -252,7 +252,7 @@ public class UserController implements FinalConstant {
 	 * @param user
 	 * @return
 	 */
-	@PutMapping("/user-updateUser")
+	@PutMapping("/user/updateUser")
 	public int updateUser(HttpSession session, HttpServletRequest request, HttpServletResponse response, User user) {
 		System.out.println("用户修改个人信息Begin...");
 		System.out.println(user);
@@ -293,7 +293,7 @@ public class UserController implements FinalConstant {
 	 * @param user
 	 * @return
 	 */
-	@PutMapping("admin-updateUserByAdmin")
+	@PutMapping("admin/updateUserByAdmin")
 	public int updateUserByAdmin(User user, String editDormitoryId) {
 		System.out.println("管理员修改用户信息Begin...");
 		System.out.println(user + "~" + editDormitoryId);
@@ -322,7 +322,7 @@ public class UserController implements FinalConstant {
 	 * @param user
 	 * @return
 	 */
-	@PostMapping("/admin-addUser")
+	@PostMapping("/admin/addUser")
 	public int addUser(User user) {
 		System.out.println("管理员新增用户Begin...");
 		System.out.println(user);
@@ -343,7 +343,7 @@ public class UserController implements FinalConstant {
 	 * @param userId
 	 * @return
 	 */
-	@DeleteMapping("admin-delUserById")
+	@DeleteMapping("admin/delUserById")
 	public int delUserById(Integer userId) {
 		System.out.println("管理员根据用户ID删除用户Begin...");
 		System.out.println(userId);
@@ -368,7 +368,7 @@ public class UserController implements FinalConstant {
 	 * @param pageSize
 	 * @return
 	 */
-	@GetMapping("admin-findUsersPage")
+	@GetMapping("admin/findUsersPage")
 	public Map<Object, Object> findUsersPage(Integer userStatus, String content, String fields, long nowPage,
 			long pageSize) {
 		System.out.println("分页模糊查询用户信息Begin...");
@@ -466,7 +466,7 @@ public class UserController implements FinalConstant {
 	 * @return
 	 * @throws Exception
 	 */
-	@GetMapping("admin-exportUsersToExcel")
+	@GetMapping("admin/exportUsersToExcel")
 	public Map<Object, Object> exportUsersToExcel(HttpServletResponse response, Integer userStatus, String content,
 			String fields, long nowPage, long pageSize) throws Exception {
 		System.out.println("导出用户信息Begin...");
@@ -603,7 +603,7 @@ public class UserController implements FinalConstant {
 //	 * @param confirmPass
 //	 * @return
 //	 */
-//	@PostMapping("/user-register")
+//	@PostMapping("/user/register")
 //	public Map<Object, Object> register(User user, String confirmPass) {
 //		System.out.println("用户注册Begin...");
 //		System.out.println(user + "~~~" + confirmPass);

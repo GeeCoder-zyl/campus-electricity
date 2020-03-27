@@ -62,7 +62,7 @@ public class ConsumeController implements FinalConstant {
 	 * @param pageSize
 	 * @return
 	 */
-	@GetMapping("/user-findConsumesPageByDormitoryId")
+	@GetMapping("/user/findConsumesPageByDormitoryId")
 	public Map<Object, Object> findConsumesPageByDormitoryId(HttpSession session, long nowPage, long pageSize) {
 		System.out.println("用户根据宿舍ID分页查询消费记录Begin...");
 		System.out.println(nowPage + "~" + pageSize);
@@ -128,7 +128,7 @@ public class ConsumeController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@GetMapping("/admin-findConsumesPage")
+	@GetMapping("/admin/findConsumesPage")
 	public Map<Object, Object> findConsumesPage(String startTime, String endTime, String dormitoryNo, long nowPage,
 			long pageSize) throws ParseException {
 		System.out.println("管理员根据日期范围和宿舍号分页查询消费记录Begin...");
@@ -218,7 +218,7 @@ public class ConsumeController implements FinalConstant {
 	 * @return
 	 * @throws Exception
 	 */
-	@GetMapping("/admin-exportConsumesToExcel")
+	@GetMapping("/admin/exportConsumesToExcel")
 	public Map<Object, Object> exportConsumesToExcel(HttpServletResponse response, String startTime, String endTime,
 			String dormitoryNo, long nowPage, long pageSize) throws Exception {
 		System.out.println("管理员导出消费记录Begin...");
@@ -325,7 +325,7 @@ public class ConsumeController implements FinalConstant {
 	 * @return
 	 * @throws ParseException
 	 */
-	@PostMapping("admin-consumeRecordCreate")
+	@PostMapping("admin/consumeRecordCreate")
 	public int consumeRecordCreate(String date, String dormitoryNo) throws ParseException {
 		System.out.println("消费记录生成Begin...");
 		System.out.println(date + "~" + dormitoryNo);

@@ -190,7 +190,7 @@
 				},
 				mounted() {
 					var that = this;
-					axios.get('../api/user-personalInfo', {
+					axios.get('../api/user/personalInfo', {
 							headers: {
 								'x-requested-with': 'XMLHttpRequest'
 							},
@@ -270,7 +270,7 @@
 				} else {
 					$.ajax({
 						type: 'put',
-						url: '../api/user-updateUser',
+						url: '../api/user/updateUser',
 						data: {
 							// 'userName': userName,
 							'userRealName': userRealName.toString(),
@@ -285,8 +285,9 @@
 									offset: '50%',
 									time: 1500
 								})
-								alert('修改成功');
-								window.location.reload();
+								setTimeout(function() {
+									window.location.reload();
+								}, 1000);
 							} else {
 								layer.msg('修改失败', {
 									icon: 2,
@@ -365,7 +366,7 @@
 				} else {
 					$.ajax({
 						type: 'put',
-						url: '../api/user-updateUser',
+						url: '../api/user/updateUser',
 						data: {
 							// 'userName': {},
 							// 'userRealName': {},
@@ -381,8 +382,9 @@
 									offset: '50%',
 									time: 1500
 								})
-								alert('绑定成功');
-								window.location.reload();
+								setTimeout(function() {
+									window.location.reload();
+								}, 1000);
 							} else {
 								layer.msg('绑定失败', {
 									icon: 2,
@@ -474,7 +476,7 @@
 				} else {
 					$.ajax({
 						type: 'put',
-						url: '../api/user-updateUser',
+						url: '../api/user/updateUser',
 						data: {
 							'userPassword': newPassword.toString()
 						},
@@ -487,8 +489,9 @@
 									offset: '50%',
 									time: 1500
 								});
-								alert('修改成功');
-								window.location.reload();
+								setTimeout(function() {
+									window.location.reload();
+								}, 1000);
 								// window.location.href = "../user/user-login.html"; //跳转到登录页面
 							} else {
 								layer.msg('修改失败', {

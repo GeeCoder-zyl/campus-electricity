@@ -152,7 +152,7 @@
 				methods: { //Axios数据加载方法
 					findAdminPaysPage: function(nowPage, pageSize, startTime, endTime, adminName) {
 						var that = this; //this指向vm
-						axios.get('../api/admin-findAdminPaysPage', {
+						axios.get('../api/admin/findAdminPaysPage', {
 								params: {
 									nowPage: nowPage,
 									pageSize: pageSize,
@@ -165,7 +165,6 @@
 								},
 							})
 							.then(function(response) {
-								console.log(response.data);
 								if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
 									window.location.href = '../admin/admin-login.html';
 								} else {
@@ -210,7 +209,11 @@
 							hint = '确认要导出本页数据吗？';
 						}
 						layer.confirm(hint, function() {
-							axios.get('../api/admin-exportAdminPaysToExcel', {
+							layer.msg('正在导出,请稍后...', {
+								icon: 1,
+								time: false
+							});
+							axios.get('../api/admin/exportAdminPaysToExcel', {
 									params: {
 										nowPage: nowPage,
 										pageSize: pageSize,

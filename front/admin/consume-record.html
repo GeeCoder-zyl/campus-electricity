@@ -140,7 +140,7 @@
 				methods: { //Axios数据加载方法
 					findConsumesPage: function(nowPage, pageSize, startTime, endTime, dormitoryNo) {
 						var that = this; //this指向vm
-						axios.get('../api/admin-findConsumesPage', {
+						axios.get('../api/admin/findConsumesPage', {
 								params: {
 									nowPage: nowPage,
 									pageSize: pageSize,
@@ -192,7 +192,11 @@
 							hint = '确认要导出本页数据吗？';
 						}
 						layer.confirm(hint, function() {
-							axios.get('../api/admin-exportConsumesToExcel', {
+							layer.msg('正在导出,请稍后...', {
+								icon: 1,
+								time: false
+							});
+							axios.get('../api/admin/exportConsumesToExcel', {
 									params: {
 										nowPage: nowPage,
 										pageSize: pageSize,

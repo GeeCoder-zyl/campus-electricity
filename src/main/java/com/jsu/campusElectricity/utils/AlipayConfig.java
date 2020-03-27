@@ -26,10 +26,10 @@ public class AlipayConfig {
 	public static String alipay_public_key = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkM1IPHRxneuXGYH8T0LjF60+q2Sgi8bOO6sHAlx8by7Bc6vQchy+y6w7TCN2TZ2VMeDCI25nYggTF7FFLHnKbg9hS8gHlqGrZ+O1n8JZGmwVW7TJGmt3tI/MMsZtY+YqjYKNhgdqRpVrEB95lPx8mbsLuBJGi2Ibt3EtwUawuj9ZMxpHelTf8gxca9UPJ19+mZl/qyDBxalZh8HcT+KHg6fIHs4nyMuTztIW5j4gmCnTffC8PI4w3Gvtq9Om4+zvoEgc7ZxETujz3n9nWW5JqA5/YcQRbULc8JHb+WxF0+Pg46kLfjQ5oGSdUvwJQ7kVyDVqIZpVzR8BRA3DzO6saQIDAQAB";
 
 	// 服务器异步通知页面路径 需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-	public static String notify_url = "http://localhost:8080/api/user-successPay";
+	public static String notify_url = "http://127.0.0.1:8080/api/user/successPay";
 
 	// 页面跳转同步通知页面路径 需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-	public static String return_url = "http://localhost:8080/user/user-index.html?menu=index";
+	public static String return_url = "http://127.0.0.1:8080/user/user-index.html";
 
 	// 签名方式
 	public static String sign_type = "RSA2";

@@ -89,7 +89,7 @@
 					layer.confirm('确认要充值吗？', function(index) {
 						$.ajax({
 							type: 'post',
-							url: '../api/admin-payElectricity',
+							url: '../api/admin/payElectricity',
 							data: {
 								'dormitoryNo': dormitoryNo,
 								'payAmount': payAmount

@@ -50,7 +50,7 @@ public class AdminController implements FinalConstant {
 	 * @param validateCode
 	 * @return
 	 */
-	@PostMapping("/admin-login")
+	@PostMapping("/admin/login")
 	public Map<Object, Object> submitLogin(HttpSession session, HttpServletResponse response, Admin admin,
 			String validateCode) {
 		System.out.println("管理员登录Begin...");
@@ -104,7 +104,7 @@ public class AdminController implements FinalConstant {
 	 * @param response
 	 * @return
 	 */
-	@DeleteMapping("/admin-logOut")
+	@DeleteMapping("/admin/logOut")
 	public Map<Object, Object> adminLogOut(HttpSession session) {
 		System.out.println("管理员退出登录Begin...");
 
