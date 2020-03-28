@@ -105,10 +105,14 @@ public class UserController implements FinalConstant {
 
 		// 将登录成功的用户的信息写入session和cookie
 		session.setAttribute(SESSION_USER_ID, user1.getUserId());
-		Cookie cookie = new Cookie(COOKIE_USER_NAME, user1.getUserName());
+		Cookie cookie = new Cookie(COOKIE_USER_ID, user1.getUserId().toString());
+		Cookie cookie2 = new Cookie(COOKIE_USER_NAME, user1.getUserName());
 		cookie.setMaxAge(60 * 30);// 设置cookie过期时间为30分钟
 		cookie.setPath("/");// 设置cookie存放目录为根目录，使多个页面可以获取同一个cookie
 		response.addCookie(cookie);
+		cookie2.setMaxAge(60 * 30);
+		cookie2.setPath("/");
+		response.addCookie(cookie2);
 		System.out.println("用户 " + user1.getUserName() + " 登录成功！");
 
 		System.out.println("用户登录End...\n");

@@ -10,6 +10,8 @@ package com.jsu.campusElectricity.utils;
 public interface FinalConstant {
 	String SESSION_USER_ID = "userId";// 存储在服务器端session中的用户ID
 
+	String COOKIE_USER_ID = "userId";// 存储在客户端cookie中的用户ID
+
 	String COOKIE_USER_NAME = "userName";// 存储在客户端cookie中的用户名
 
 	String SESSION_ADMIN_ID = "adminId";// 存储在服务器端session中的管理员ID

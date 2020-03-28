@@ -232,10 +232,11 @@
 						time: 1500
 					});
 				} else {
+					var userId = $.cookie("userId"); //用户ID
 					var payAmount = $("#payAmount").val().trim(); //充值金额
 					var orderName = "宿舍" + dormitoryNo + "的电费充值订单"; //订单名称
 					var date = new Date().format("yyyyMMddhhmmss");
-					var orderId = date + payAmount + 1; //订单号
+					var orderId = userId + "_" + date + "_" + dormitoryNo + "_" + payAmount; //订单号
 					if (payAmount.length < 1 || payAmount <= 0 || payAmount > 1000) {
 						layer.msg('充值金额无效', {
 							icon: 2,

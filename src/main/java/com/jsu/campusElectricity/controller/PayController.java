@@ -67,89 +67,6 @@ public class PayController implements FinalConstant {
 	long total = 0;// 总条数
 
 	/**
-	 * 根据宿舍ID分页查询充值记录
-	 * 
-	 * @param session
-	 * @param nowPage
-	 * @return
-	 */
-	@GetMapping("/user/findPaysPageByDormitoryId")
-	public Map<Object, Object> findPaysPageByDormitoryId(HttpSession session, long nowPage, long pageSize) {
-		System.out.println("根据宿舍ID分页查询充值记录Begin...");
-		System.out.println(nowPage);
-
-		Map<Object, Object> map = new HashMap<Object, Object>();
-
-		// 返回初始数据
-		if (nowPage < 1) {
-			nowPage = 1;
-		} else if (nowPage > totalPage) {
-			nowPage = totalPage;
-		}
-		map.put("nowPage", nowPage);
-		map.put("pageSize", pageSize);
-		map.put("totalPage", totalPage);
-		map.put("total", total);
-
-		// 从session中获取已登录用户的ID
-		int userId = (int) session.getAttribute(SESSION_USER_ID);
-
-		// 根据用户ID查询用户信息
-		User user = userService.getUserById(userId);
-		if (user.getDormitoryId() == null) {
-			map.put(REQUEST_ERROR, "未绑定宿舍！");
-			return map;
-		}
-
-		// 根据宿舍ID分页查询充值记录
-		IPage<Pay> iPage = payService.listPaysPageByDormitoryId(new Page<Pay>(nowPage, pageSize),
-				user.getDormitoryId());
-		nowPage = iPage.getCurrent();// 当前页
-		totalPage = iPage.getPages();// 总页数
-		long total = iPage.getTotal();// 总条数
-		System.out.println("当前页：" + nowPage);
-		System.out.println("总页数：" + totalPage);
-		System.out.println("每页条数：" + iPage.getSize());
-		System.out.println("总条数：" + total);
-		map.put("nowPage", nowPage);
-		map.put("pageSize", pageSize);
-		map.put("totalPage", totalPage);
-		map.put("total", total);
-		List<Pay> payList = iPage.getRecords();
-		if (payList == null || payList.size() == 0) {
-			map.put(REQUEST_ERROR, "未找到充值记录！");
-			return map;
-		}
-		System.out.println(payList);
-		map.put("payList", payList);
-
-		// 根据充值方式查询充值人名称
-		List<String> payNameList = new ArrayList<String>();
-		for (int i = 0; i < payList.size(); i++) {
-			if (payList.get(i).getPayManner() == 0) {
-				Admin admin = adminService.getAdminById(payList.get(i).getPayPid());
-				if (admin == null) {
-					map.put(REQUEST_ERROR, "未找到充值人名称！");
-					return map;
-				}
-				payNameList.add(i, admin.getAdminName());
-			} else if (payList.get(i).getPayManner() == 1) {
-				User user2 = userService.getUserById(payList.get(i).getPayPid());
-				if (user2 == null) {
-					map.put(REQUEST_ERROR, "未找到充值人名称！");
-					return map;
-				}
-				payNameList.add(i, user2.getUserName());
-			}
-		}
-		System.out.println("payNameList：" + payNameList);
-		map.put("payNameList", payNameList);
-
-		System.out.println("根据宿舍ID分页查询充值记录End...");
-		return map;
-	}
-
-	/**
 	 * 用户充值电费（支付宝沙箱支付）
 	 * 
 	 * @param request
@@ -214,7 +131,7 @@ public class PayController implements FinalConstant {
 	 * @throws UnsupportedEncodingException
 	 * @throws AlipayApiException
 	 */
-	@RequestMapping("/user/successPay")
+	@RequestMapping("/successPay")
 	public String successPay(HttpSession session, HttpServletRequest request)
 			throws UnsupportedEncodingException, AlipayApiException {
 		System.out.println("充值成功异步处理Begin...");
@@ -230,7 +147,7 @@ public class PayController implements FinalConstant {
 				valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
 			}
 			// 乱码解决，这段代码在出现乱码时使用
-			valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+//			valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
 			params.put(name, valueStr);
 		}
 
@@ -253,8 +170,8 @@ public class PayController implements FinalConstant {
 
 			System.out.println("支付成功！");
 
-			// 从session中获取已登录用户的ID
-			int userId = (int) session.getAttribute(SESSION_USER_ID);
+			// 从订单号中获取用户的ID
+			int userId = Integer.parseInt(out_trade_no.substring(0, out_trade_no.indexOf("_")));
 
 			// 根据用户ID查询用户信息
 			User user = userService.getUserById(userId);
@@ -362,6 +279,89 @@ public class PayController implements FinalConstant {
 		System.out.println("1条充值信息新增成功！");
 
 		System.out.println("管理员充值电费End...");
+		return map;
+	}
+
+	/**
+	 * 用户根据宿舍ID分页查询充值记录
+	 * 
+	 * @param session
+	 * @param nowPage
+	 * @return
+	 */
+	@GetMapping("/user/findPaysPageByDormitoryId")
+	public Map<Object, Object> findPaysPageByDormitoryId(HttpSession session, long nowPage, long pageSize) {
+		System.out.println("根据宿舍ID分页查询充值记录Begin...");
+		System.out.println(nowPage);
+
+		Map<Object, Object> map = new HashMap<Object, Object>();
+
+		// 返回初始数据
+		if (nowPage < 1) {
+			nowPage = 1;
+		} else if (nowPage > totalPage) {
+			nowPage = totalPage;
+		}
+		map.put("nowPage", nowPage);
+		map.put("pageSize", pageSize);
+		map.put("totalPage", totalPage);
+		map.put("total", total);
+
+		// 从session中获取已登录用户的ID
+		int userId = (int) session.getAttribute(SESSION_USER_ID);
+
+		// 根据用户ID查询用户信息
+		User user = userService.getUserById(userId);
+		if (user.getDormitoryId() == null) {
+			map.put(REQUEST_ERROR, "未绑定宿舍！");
+			return map;
+		}
+
+		// 根据宿舍ID分页查询充值记录
+		IPage<Pay> iPage = payService.listPaysPageByDormitoryId(new Page<Pay>(nowPage, pageSize),
+				user.getDormitoryId());
+		nowPage = iPage.getCurrent();// 当前页
+		totalPage = iPage.getPages();// 总页数
+		long total = iPage.getTotal();// 总条数
+		System.out.println("当前页：" + nowPage);
+		System.out.println("总页数：" + totalPage);
+		System.out.println("每页条数：" + iPage.getSize());
+		System.out.println("总条数：" + total);
+		map.put("nowPage", nowPage);
+		map.put("pageSize", pageSize);
+		map.put("totalPage", totalPage);
+		map.put("total", total);
+		List<Pay> payList = iPage.getRecords();
+		if (payList == null || payList.size() == 0) {
+			map.put(REQUEST_ERROR, "未找到充值记录！");
+			return map;
+		}
+		System.out.println(payList);
+		map.put("payList", payList);
+
+		// 根据充值方式查询充值人名称
+		List<String> payNameList = new ArrayList<String>();
+		for (int i = 0; i < payList.size(); i++) {
+			if (payList.get(i).getPayManner() == 0) {
+				Admin admin = adminService.getAdminById(payList.get(i).getPayPid());
+				if (admin == null) {
+					map.put(REQUEST_ERROR, "未找到充值人名称！");
+					return map;
+				}
+				payNameList.add(i, admin.getAdminName());
+			} else if (payList.get(i).getPayManner() == 1) {
+				User user2 = userService.getUserById(payList.get(i).getPayPid());
+				if (user2 == null) {
+					map.put(REQUEST_ERROR, "未找到充值人名称！");
+					return map;
+				}
+				payNameList.add(i, user2.getUserName());
+			}
+		}
+		System.out.println("payNameList：" + payNameList);
+		map.put("payNameList", payNameList);
+
+		System.out.println("根据宿舍ID分页查询充值记录End...");
 		return map;
 	}
 
