@@ -8,7 +8,6 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.pojo.Dormitory;
-import com.jsu.campusElectricity.pojo.Pay;
 
 /**
  * @ClassName: Dormitory.java
@@ -48,7 +47,7 @@ public interface DormitoryService {
 	 * @param dormitory
 	 * @return
 	 */
-	IPage<Dormitory> listDormitorysPage(Page<Pay> page, Dormitory dormitory);
+	IPage<Dormitory> listDormitorysPage(Page<Dormitory> page, Dormitory dormitory);
 
 	/**
 	 * 查询所有宿舍

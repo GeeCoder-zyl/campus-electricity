@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.mapper.UserMapper;
-import com.jsu.campusElectricity.pojo.Pay;
 import com.jsu.campusElectricity.pojo.User;
 import com.jsu.campusElectricity.service.UserService;
 
@@ -27,7 +26,7 @@ public class UserServiceImpl implements UserService {
 	 * 分页模糊查询用户信息
 	 */
 	@Override
-	public IPage<User> listUsersPage(Page<Pay> page, User user) {
+	public IPage<User> listUsersPage(Page<User> page, User user) {
 		IPage<User> userList = userMapper.listUsersPage(page, user);
 		return userList;
 	}

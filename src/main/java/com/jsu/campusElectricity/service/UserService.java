@@ -2,7 +2,6 @@ package com.jsu.campusElectricity.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jsu.campusElectricity.pojo.Pay;
 import com.jsu.campusElectricity.pojo.User;
 
 /**
@@ -20,7 +19,7 @@ public interface UserService {
 	 * @param user
 	 * @return
 	 */
-	IPage<User> listUsersPage(Page<Pay> page, User user);
+	IPage<User> listUsersPage(Page<User> page, User user);
 
 	/**
 	 * 新增用户

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jsu.campusElectricity.service.AdminService;
 import com.jsu.campusElectricity.service.UserService;
 import com.jsu.campusElectricity.utils.FinalConstant;
 
@@ -27,6 +28,8 @@ import com.jsu.campusElectricity.utils.FinalConstant;
 public class LoginInterceptor implements HandlerInterceptor, FinalConstant {
 	@Autowired
 	UserService userService;
+	@Autowired
+	AdminService adminService;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -78,6 +81,21 @@ public class LoginInterceptor implements HandlerInterceptor, FinalConstant {
 					return false;
 				} else {
 					response.sendRedirect("http://localhost:8080/user/user-login.html");
+					return false;
+				}
+			} else if (reqObject.equals("admin")
+					&& adminService.getAdminById((int) session.getAttribute(SESSION_ADMIN_ID)).getAdminStatus() == 0) {
+				System.out.println("管理员已被禁用，跳转到管理员登录页面！");
+				// 清除session中的用户信息
+				session.removeAttribute(SESSION_ADMIN_ID);
+				System.out.println("清除管理员登录信息完成！");
+				// 判断是否是Ajax或Axios请求
+				if (("XMLHttpRequest").equalsIgnoreCase(xReq)) {
+					// 设置响应消息
+					response.getWriter().write("sessionIsNull");
+					return false;
+				} else {
+					response.sendRedirect("http://localhost:8080/admin/admin-login.html");
 					return false;
 				}
 			} else {

@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>用电量统计</title>
+		<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/button.css" />
+	</head>
+	<body>
+		<div id="header"></div>
+		<div class="main w1200">
+			<div id="menu"></div>
+			<div class="right">
+				<div class="tap">
+					<span>用电量统计</span>
+				</div>
+				<div id="container" style="min-width:700px;height:400px"></div>
+			</div>
+		</div>
+		<div id="footer"></div>
+		<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/hcharts/Highcharts/5.0.6/js/highcharts.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/hcharts/Highcharts/5.0.6/js/modules/exporting.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+		<script type="text/javascript" src="../static/js/day.min.js"></script>
+		<script type="text/javascript">
+			/* 加载页眉和菜单DOM */
+			$("#header").load("header.html");
+			$("#menu").load("menu.html");
+
+			var chart = null; // 定义全局变量
+
+			/* 绘制图形 */
+			$(function() {
+				chart = Highcharts.chart('container', {
+					chart: {
+						type: 'column',
+						events: {
+							load: requestData // 图表加载完毕后执行的回调函数
+						}
+					},
+					title: {
+						text: '用电量统计'
+					},
+					xAxis: {
+						lineWidth: 1
+					},
+					yAxis: {
+						min: 0,
+						title: {
+							text: '用电量（kW·h）'
+						}
+					},
+					tooltip: {
+						headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+						pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+							'<td style="padding:0"><b>{point.y:.1f} kW·h</b></td></tr>',
+						footerFormat: '</table>',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0,
+							groupPadding: 0,
+							shadow: false,
+							dataLabels: {
+								inside: true
+							}
+						}
+					},
+					series: [{
+						name: '用电量',
+						data: []
+					}]
+				});
+			});
+
+			/* 获取数据 */
+			function requestData() {
+				$.ajax({
+					type: 'get',
+					url: '../api/user/dormitoryLatest30DaysStatistics',
+					success: function(data) {
+						console.log(data);
+						if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+							window.location.href = '../admin/admin-login.html';
+						} else if (data.error != null) {
+							layer.msg(data.error, {
+								icon: 2,
+								time: 1500
+							});
+						} else {
+							chart.xAxis[0].setCategories(data.consumeDateList);
+							chart.series[0].setData(data.consumeKwhList);
+							chart.setTitle({
+								text: data.dormitoryNo + '宿舍' + '近30天用电量统计'
+							});
+							chart.redraw(); //刷新
+						}
+					},
+					error: function(data) {
+						console.log(data.msg);
+						layer.msg('查询失败', {
+							icon: 2,
+							time: 1500
+						});
+						//后端返回session为空的信息则跳转到登录页面
+						if (data.responseText == 'sessionIsNull') {
+							window.location.href = '../admin/admin-login.html';
+						}
+					},
+				})
+			}
+		</script>
+	</body>
+</html>

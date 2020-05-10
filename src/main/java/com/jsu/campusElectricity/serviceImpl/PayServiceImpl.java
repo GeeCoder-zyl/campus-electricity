@@ -86,6 +86,9 @@ public class PayServiceImpl implements PayService {
 		return payList;
 	}
 
+	/**
+	 * 根据日期范围和管理员ID计算充值金额总和
+	 */
 	@Override
 	public double getAdminPaysSum(Date startTime, Date endTime, Integer adminId) {
 		double paysSum = payMapper.getAdminPaysSum(startTime, endTime, adminId);

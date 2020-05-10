@@ -89,4 +89,12 @@ public interface ConsumeService {
 	 * @return
 	 */
 	Consume getConsumeByDormitoryIdAndDate(int dormitoryId, Date consumeDate);
+
+	/**
+	 * 根据宿舍ID查询近30天消费记录
+	 * 
+	 * @param dormitoryId
+	 * @return
+	 */
+	List<Consume> listConsumesByDormitoryIdLatest30Days(int dormitoryId);
 }

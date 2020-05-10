@@ -362,9 +362,9 @@ public class ConsumeController implements FinalConstant {
 				double consumeAmount = Double.parseDouble(df2.format(consumeKwh * 0.5224));// 消费金额
 				String date2 = year + "-" + month + "-" + day;// 消费日期
 				if (consumeService.getConsumeByDormitoryIdAndDate(dormitoryId, df.parse(date2)) == null) {// 当数据库中不存在当前日期的消费记录时
-					if (dormitoryBalance > 0) {
+					if (dormitoryBalance > 0) {// 当宿舍电费余额大于0时
 						dormitoryBalance = Double.parseDouble(df2.format(dormitoryBalance - consumeAmount));
-						if (dormitoryBalance <= 0) {
+						if (dormitoryBalance <= 0) {// 当宿舍电费余额减去消费金额小于0时
 							dormitory.setDormitoryStatus(0);
 						}
 						dormitory2.setDormitoryId(dormitoryId);
@@ -381,6 +381,18 @@ public class ConsumeController implements FinalConstant {
 						cNum += num;
 						number[0] = cNum;
 						number[1] = dNum;
+						return number;
+					} else {// 当宿舍电费余额小于0时
+						consume.setConsumeDate(df.parse(date2));
+						consume.setConsumeKwh(0.00);
+						consume.setConsumeAmount(0.00);
+						consume.setConsumeBalance(dormitoryBalance);
+						consume.setDormitoryId(dormitoryId);
+						System.out.println(consume);
+						int num = consumeService.insertConsume(consume);
+						cNum += num;
+						number[0] = cNum;
+						number[1] = 0;
 						return number;
 					}
 				}
@@ -419,6 +431,6 @@ public class ConsumeController implements FinalConstant {
 		System.out.println(number[1] + "条宿舍信息修改成功！");
 
 		System.out.println("消费记录生成End...");
-		return number[0] + number[1];
+		return number[0];
 	}
 }

@@ -11,12 +11,12 @@
 		<link rel="stylesheet" type="text/css" href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" />
 		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/skin/default/skin.css" id="skin" />
 		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/style.css" />
-		<title>消费记录生成</title>
+		<title>宿舍日用电量记录生成</title>
 	</head>
 	<body>
 		<nav class="breadcrumb">
 			<i class="Hui-iconfont">&#xe67f;</i>
-			首页 <span class="c-gray en">&gt;</span> 消费记录生成 <span class="c-gray en">&gt;</span> 消费记录生成
+			首页 <span class="c-gray en">&gt;</span> 用电记录生成 <span class="c-gray en">&gt;</span> 宿舍日用电量记录生成
 			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
 			 title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
 		</nav>
@@ -24,7 +24,7 @@
 		<div class="text-c">
 			日期：<input id="date" type="text" placeholder="格式:年-月" class="input-text" style="width:120px;">
 			<input id="dormitoryNo" type="text" placeholder="宿舍号" style="width:100px" class="input-text">
-			<button class="btn btn-success" onclick="createConsumeRecord()">生成消费记录</button>
+			<button class="btn btn-success" onclick="createConsumeRecord()">生成宿舍日用电量记录</button>
 		</div>
 		<!--_footer 作为公共模版分离出去-->
 		<script type="text/javascript" src="../static/hui/lib/jquery/1.9.1/jquery.min.js"></script>
@@ -44,8 +44,8 @@
 				var year = date.substring(0, date.indexOf("-"));
 				var month = date.substring(date.indexOf("-") + 1);
 				var nowDate = new Date();
-				console.log(year >= nowDate.getFullYear());
-				console.log(month > nowDate.getMonth());
+				// console.log(year >= nowDate.getFullYear());
+				// console.log(month > nowDate.getMonth());
 				if (date == '' || date.indexOf("-") == null) {
 					layer.msg('请输入正确的日期', {
 						icon: 2,
@@ -61,7 +61,7 @@
 					return false;
 				}
 				if (year >= nowDate.getFullYear() && month > nowDate.getMonth() + 1) {
-					layer.msg('不能生成当前日期之后的消费记录', {
+					layer.msg('不能生成当前日期之后的宿舍日用电量记录', {
 						icon: 2,
 						time: 1500
 					});
@@ -83,7 +83,7 @@
 						if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
 							window.location.href = '../admin/admin-login.html';
 						} else if (data > 0) {
-							layer.msg(data / 2 + '条消费记录生成成功', {
+							layer.msg(data + '条宿舍日用电量记录生成成功', {
 								icon: 1,
 								time: 1500
 							});

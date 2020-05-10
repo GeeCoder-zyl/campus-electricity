@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsu.campusElectricity.mapper.AdminMapper">
+  <resultMap id="BaseResultMap" type="com.jsu.campusElectricity.pojo.Admin">
+    <id column="pk_admin_id" jdbcType="INTEGER" property="adminId" />
+    <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
+    <result column="admin_password" jdbcType="VARCHAR" property="adminPassword" />
+    <result column="admin_status" jdbcType="INTEGER" property="adminStatus" />
+    <result column="admin_level" jdbcType="INTEGER" property="adminLevel" />
+    <result column="admin_real_name" jdbcType="VARCHAR" property="adminRealName" />
+    <result column="admin_tel" jdbcType="VARCHAR" property="adminTel" />
+  </resultMap>  
+  
+  <sql id="Base_Column_List">
+     pk_admin_id, admin_name, admin_password, admin_status, admin_level, admin_real_name, admin_tel
+  </sql>
+  
+  <!-- 模糊查询管理员信息 -->
+  <select id="listAdminsPage" resultMap="BaseResultMap">
+    select * from tb_admin
+    <where>
+  	<if test="admin.adminName != null">
+    and admin_name like concat('%',#{admin.adminName},'%')
+    </if>
+    <if test="admin.adminRealName != null">
+    and admin_real_name like concat('%',#{admin.adminRealName},'%')
+    </if>
+    <if test="admin.adminTel != null">
+    and admin_tel like concat('%',#{admin.adminTel},'%')
+    </if>
+    <if test="admin.adminStatus != null">
+    and admin_status = #{admin.adminStatus}
+    </if>
+  	</where>
+</select>
+</mapper>

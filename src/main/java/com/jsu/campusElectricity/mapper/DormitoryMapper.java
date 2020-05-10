@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.pojo.Dormitory;
-import com.jsu.campusElectricity.pojo.Pay;
 
 /**
  * @ClassName: DormitoryMapper.java
@@ -25,5 +24,5 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
 	 * @param dormitory
 	 * @return
 	 */
-	IPage<Dormitory> listDormitorysPage(Page<Pay> page, @Param("dormitory") Dormitory dormitory);
+	IPage<Dormitory> listDormitorysPage(Page<Dormitory> page, @Param("dormitory") Dormitory dormitory);
 }

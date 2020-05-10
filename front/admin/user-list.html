@@ -49,7 +49,9 @@
 				<div class="cl pd-5 bg-1 bk-gray mt-20">
 					<span class="l">
 						<a @click="addUserAction()" data-title="添加用户" data-toggle="modal" data-target="#user-modal" class="btn btn-primary radius">
-							<i class="Hui-iconfont">&#xe600;</i>添加用户</a>
+							<i class="Hui-iconfont">&#xe600;</i> 添加用户</a>
+						<!-- <a href="javascript:;" onclick="userBatchAdd('批量添加用户','user-batch-add.html','','350')" class="btn btn-primary radius"><i
+							 class="Hui-iconfont">&#xe600;</i> 批量添加用户</a> -->
 					</span>
 					<span class="r" style="font-size:15px;">共有数据：<strong>{{ total }}</strong> 条，每页显示：<strong>{{ pageSize }} 条</strong></span>
 				</div>
@@ -130,8 +132,8 @@
 					<div class="modal-dialog">
 						<div class="modal-content radius">
 							<div class="modal-header">
-								<h3 v-if="action == 0" class="modal-title">编辑用户</h3>
-								<h3 v-if="action == 1" class="modal-title">添加用户</h3>
+								<h3 v-if="userAction == 0" class="modal-title">编辑用户</h3>
+								<h3 v-if="userAction == 1" class="modal-title">添加用户</h3>
 								<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
 							</div>
 							<div class="modal-body">
@@ -159,23 +161,32 @@
 												<input id="editUserPassword" ref="editUserPassword" type="password" class="input-text" placeholder="8-16位字母数字下划线">
 											</div>
 										</div>
-										<div v-if="action == 0" class="row cl">
+										<div class="row cl">
+											<label class="form-label col-xs-4 col-sm-3">确认密码：</label>
+											<div class="formControls col-xs-8 col-sm-7">
+												<input id="confirmUserPassword" ref="confirmUserPassword" type="password" class="input-text" placeholder="8-16位字母数字下划线">
+											</div>
+										</div>
+										<div class="row cl">
 											<label class="form-label col-xs-4 col-sm-3">真实姓名：</label>
 											<div class="formControls col-xs-8 col-sm-7">
 												<input id="editUserRealName" ref="editUserRealName" type="text" class="input-text" placeholder="2-20位字符">
 											</div>
 										</div>
-										<div v-if="action == 0" class="row cl">
+										<div class="row cl">
 											<label class="form-label col-xs-4 col-sm-3">联系电话：</label>
 											<div class="formControls col-xs-8 col-sm-7">
 												<input id="editUserTel" ref="editUserTel" type="text" class="input-text" placeholder="11位手机号码">
 											</div>
 										</div>
-										<div v-if="action == 0" class="row cl">
-											<label class="form-label col-xs-4 col-sm-3">绑定的宿舍号：</label>
-											<div class="formControls col-xs-8 col-sm-7">
-												<input id="editDormitoryNo" ref="editDormitoryNo" type="text" class="input-text" placeholder="纯数字编号">
-												<input id="editDormitoryId" ref="editDormitoryId" type="text" class="input-text" hidden="hidden">
+										<div v-if="userAction == 0">
+											<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3">绑定的宿舍号：</label>
+												<div class="formControls col-xs-8 col-sm-7">
+													<input id="editDormitoryNo" ref="editDormitoryNo" type="text" class="input-text" placeholder="5-10位纯数字编号">
+													<input id="editDormitoryId" ref="editDormitoryId" type="text" class="input-text" hidden="hidden">
+													<p style="font-size:15px;">例：1栋2单元301-4即输入123014</p>
+												</div>
 											</div>
 											<div>
 												<strong id="dormitoryResult" style="font-size:15px;"></strong>
@@ -185,9 +196,9 @@
 								</article>
 							</div>
 							<div class="modal-footer">
-								<button v-if="action == 0" @click="updateUser($refs.editUserId.innerText, $refs.editUserName.value, $refs.editUserPassword.value, $refs.editUserRealName.value, $refs.editUserTel.value, $refs.editDormitoryId.value,$refs.editDormitoryNo.value, nowPage, pageSize, $refs.selectUserStatus.value, $refs.content.value, $refs.fields.value)"
+								<button v-if="userAction == 0" @click="updateUser($refs.editUserId.innerText, $refs.editUserName.value, $refs.editUserPassword.value, $refs.confirmUserPassword.value, $refs.editUserRealName.value, $refs.editUserTel.value, $refs.editDormitoryId.value,$refs.editDormitoryNo.value, nowPage, pageSize, $refs.selectUserStatus.value, $refs.content.value, $refs.fields.value)"
 								 class="btn btn-primary" data-dismiss="modal">确定</button>
-								<button v-if="action == 1" @click="addUser($refs.editUserName.value, $refs.editUserPassword.value, nowPage, pageSize, $refs.selectUserStatus.value, $refs.content.value, $refs.fields.value)"
+								<button v-if="userAction == 1" @click="addUser($refs.editUserName.value, $refs.editUserPassword.value, $refs.confirmUserPassword.value, $refs.editUserRealName.value, $refs.editUserTel.value, nowPage, pageSize, $refs.selectUserStatus.value, $refs.content.value, $refs.fields.value)"
 								 class="btn btn-primary" data-dismiss="modal">确定</button>
 								<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
 							</div>
@@ -222,6 +233,11 @@
 				$('#form-user')[0].reset();
 			});
 
+			/* 批量添加用户 */
+			function userBatchAdd(title, url, w, h) {
+				layer_show(title, url, w, h);
+			}
+
 			/* vue */
 			var vm = new Vue({
 				el: '#userList',
@@ -232,7 +248,7 @@
 					nowPage: {}, //当前页
 					totalPage: {}, //总页数
 					total: {}, //总条数
-					action: {} //要执行的操作，0：编辑，1：添加
+					userAction: 0 //要执行的用户操作，0：编辑，1：添加
 				},
 				mounted() { //在vue实例挂载完毕（页面加载完毕）时调用数据初始化方法
 					this.findUsersPage(1, 5, null, null, null);
@@ -463,19 +479,19 @@
 					},
 
 					/* 修改用户信息 */
-					updateUser: function(editUserId, editUserName, editUserPassword, editUserRealName, editUserTel, editDormitoryId,
-						editDormitoryNo, nowPage, pageSize, selectUserStatus, content, fields) {
+					updateUser: function(editUserId, editUserName, editUserPassword, confirmUserPassword, editUserRealName,
+						editUserTel, editDormitoryId, editDormitoryNo, nowPage, pageSize, selectUserStatus, content, fields) {
 						var userName = editUserName.trim().match(/^\d{1,16}$/); //1-16位数字
 						var userPassword = editUserPassword.trim().match(/^\w{8,16}$/); //8-16位字母数字下划线
 						if (editUserRealName.length > 1) {
-							var userRealName = editUserRealName.trim().match(/^.{2,20}$/);
+							var userRealName = editUserRealName.trim().match(/^.{2,20}$/); //2-20位所有字符
 						} else {
 							var userRealName = editUserRealName;
 						}
 						if (editUserTel.length > 1) {
 							var userTel = editUserTel.trim().match(
 								/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-7|9])|(?:5[0-3|5-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1|8|9]))\d{8}$/
-							);
+							); //电话号码
 						} else {
 							var userTel = editUserTel;
 						}
@@ -496,7 +512,13 @@
 								time: 1500
 							});
 						} else if (userPassword == null) {
-							layer.msg('密码由8-16位字符组成', {
+							layer.msg('密码由8-16位字母数字下划线组成', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+						} else if (confirmUserPassword != userPassword) {
+							layer.msg('两次输入的密码不一致', {
 								icon: 2,
 								offset: '50%',
 								time: 1500
@@ -567,9 +589,54 @@
 					},
 
 					/* 添加用户信息 */
-					addUser: function(editUserName, editUserPassword, nowPage, pageSize, selectUserStatus, content, fields) {
-						if (userResult == 0) {
-							layer.msg('添加失败，用户名不可用', {
+					addUser: function(editUserName, editUserPassword, confirmUserPassword, editUserRealName, editUserTel,
+						nowPage, pageSize, selectUserStatus, content, fields) {
+						var userName = editUserName.trim().match(/^\d{1,16}$/); //1-16位数字
+						var userPassword = editUserPassword.trim().match(/^\w{8,16}$/); //8-16位字母数字下划线
+						if (editUserRealName.length > 1) {
+							var userRealName = editUserRealName.trim().match(/^.{2,20}$/); //2-20位所有字符
+						} else {
+							var userRealName = editUserRealName;
+						}
+						if (editUserTel.length > 1) {
+							var userTel = editUserTel.trim().match(
+								/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-7|9])|(?:5[0-3|5-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1|8|9]))\d{8}$/
+							); //电话号码
+						} else {
+							var userTel = editUserTel;
+						}
+						if (userName == null) {
+							layer.msg('用户名由1-16位纯数字组成', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+						} else if (userResult == 0) {
+							layer.msg('用户名不可用', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+						} else if (userPassword == null) {
+							layer.msg('密码由8-16位字母数字下划线组成', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+						} else if (confirmUserPassword != userPassword.toString()) {
+							layer.msg('两次输入的密码不一致', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+						} else if (userRealName == null) {
+							layer.msg('真实姓名不合法', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							});
+						} else if (userTel == null) {
+							layer.msg('手机号码不合法', {
 								icon: 2,
 								offset: '50%',
 								time: 1500
@@ -582,12 +649,13 @@
 									url: '../api/admin/addUser',
 									dataType: 'json',
 									data: {
-										'userName': editUserName,
-										'userPassword': editUserPassword,
-										'userStatus': 1,
+										'userName': userName.toString(),
+										'userPassword': userPassword.toString(),
+										'userRealName': userRealName.toString(),
+										'userTel': userTel.toString(),
+										'userStatus': 1
 									},
 									success: function(data) {
-										console.log(data);
 										if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
 											window.location.href = '../admin/admin-login.html';
 										} else if (data == 1) {
@@ -619,25 +687,26 @@
 						}
 					},
 
-					/* 编辑用户操作-模态框赋初值 */
+					/* 编辑用户操作,模态框赋初值 */
 					editUserAction: function(userId, userName, userPassword, userRealName, userTel, dormitoryNo, dormitoryId) {
+						this.userAction = 0;
 						$("#editUserId").text(userId);
 						$("#editUserName").val(userName);
 						$("#userName").text(userName);
 						$("#editUserPassword").val(userPassword);
+						$("#confirmUserPassword").val(userPassword);
 						$("#editUserRealName").val(userRealName);
 						$("#editUserTel").val(userTel);
 						$("#editDormitoryNo").val(dormitoryNo);
 						$("#editDormitoryId").val(dormitoryId);
-						this.action = 0;
 						userResult = null;
 						dormitoryResult = null;
 						$("#userId").show();
 					},
 
-					/* 添加用户操作-模态框赋初值*/
+					/* 添加用户操作*/
 					addUserAction: function() {
-						this.action = 1;
+						this.userAction = 1;
 						userResult = null;
 						dormitoryResult = null;
 						$("#userId").hide();
@@ -680,7 +749,7 @@
 
 			/* 异步查询宿舍是否存在 */
 			$("#editDormitoryNo").keyup(function() {
-				var dormitoryNo = $("#editDormitoryNo").val(); //用户号
+				var dormitoryNo = $("#editDormitoryNo").val(); //宿舍号
 				if (dormitoryNo.length > 0) {
 					$.ajax({
 						type: 'get',

@@ -4,21 +4,9 @@
 			<a class="logo navbar-logo-m f-l mr-10 visible-xs" href="/aboutHui.shtml">H-ui</a>
 			<span class="logo navbar-slogan f-l mr-10 hidden-xs">v1.0</span>
 			<a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
-			<nav class="nav navbar-nav">
-				<ul class="cl">
-					<li class="dropDown dropDown_hover">
-						<a href="javascript:;" class="dropDown_A"><i class="Hui-iconfont">&#xe600;</i> 新增 <i class="Hui-iconfont">&#xe6d5;</i></a>
-						<ul class="dropDown-menu menu radius box-shadow">
-							<li>
-								<a href="javascript:;" onclick="member_add('新增宿舍','../admin/add-dormitory.html','','500')"><i class="Hui-iconfont">&#xe616;</i>宿舍</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</nav>
 			<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
 				<ul class="cl">
-					<li>管理员</li>
+					<li id="adminLevel">管理员</li>
 					<li class="dropDown dropDown_hover">
 						<a href="#" class="dropDown_A">
 							<font id="adminName"></font> <i class="Hui-iconfont">&#xe6d5;</i>
@@ -41,6 +29,33 @@
 			top.location.href = '../admin/admin-login.html';
 		}
 		$("#adminName").text(adminName);
+	})
+
+	/* 查询当前已登录管理员的等级 */
+	$(function() {
+		$.ajax({
+			type: 'get',
+			url: '../api/admin/findAdminInfo',
+			dataType: 'json',
+			success: function(data) {
+				if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+					window.location.href = '../admin/admin-login.html';
+				} else if (data != null) {
+					if (data.adminLevel == 0) {
+						$("#adminLevel").text("超级管理员");
+					} else if (data.adminLevel == 1) {
+						$("#adminLevel").text("普通管理员");
+					}
+				}
+			},
+			error: function(data) {
+				console.log(data.msg);
+				//后端返回session为空的信息则跳转到登录页面
+				if (data.responseText == 'sessionIsNull') {
+					window.location.href = '../admin/admin-login.html';
+				}
+			},
+		});
 	})
 
 	/* 管理员退出登录 */

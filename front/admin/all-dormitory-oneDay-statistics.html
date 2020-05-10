@@ -113,7 +113,7 @@
 						if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
 							window.location.href = '../admin/admin-login.html';
 						} else if (data.error != null) {
-							layer.msg('查询失败' + data.error, {
+							layer.msg(data.error, {
 								icon: 2,
 								time: 1500
 							});

@@ -1,0 +1,669 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="Bookmark" href="/favicon.ico">
+		<link rel="Shortcut Icon" href="/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui/css/H-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/H-ui.admin.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/skin/default/skin.css" id="skin" />
+		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/style.css" />
+		<title>管理员列表</title>
+	</head>
+	<body>
+		<nav class="breadcrumb">
+			首页 <span class="c-gray en">&gt;</span>管理员管理 <span class="c-gray en">&gt;</span>管理员列表
+			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
+			 title="刷新页面"><i class="Hui-iconfont">&#xe68f;</i></a>
+		</nav>
+		<div class="page-container">
+			<div id="adminList">
+				<div class="text-c">
+					<span class="select-box inline">
+						<select ref="selectAdminStatus" @change="findAdminsPage(1, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)"
+						 class="select">
+							<option value="">所有状态</option>
+							<option value="0">停用</option>
+							<option value="1">启用</option>
+						</select>
+					</span>
+					<input ref="content" type="text" placeholder="模糊查询" style="width:230px" class="input-text">
+					<span class="select-box inline">
+						<select ref="fields" class="select">
+							<option value="管理员名">按管理员名</option>
+							<option value="真实姓名">按真实姓名</option>
+							<option value="联系电话">按联系电话</option>
+						</select>
+					</span>
+					<button @click="findAdminsPage(1, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value, 1)"
+					 class="btn btn-success"><i class="Hui-iconfont">&#xe665;</i>搜管理员</button>
+					<button @click="findAdminsPage(nowPage, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)"
+					 class="btn btn-success radius r">刷新数据</button>
+				</div>
+				<div class="cl pd-5 bg-1 bk-gray mt-20">
+					<span class="l">
+						<a @click="addAdminAction()" data-title="添加管理员" data-toggle="modal" class="btn btn-primary radius">
+							<i class="Hui-iconfont">&#xe600;</i> 添加管理员</a>
+					</span>
+					<span class="r" style="font-size:15px;">共有数据：<strong>{{ total }}</strong> 条，每页显示：<strong>{{ pageSize }} 条</strong></span>
+				</div>
+				<div class="mt-20">
+					<div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+						<table id="dormitoryList" class="table table-border table-bordered table-hover table-bg table-sort">
+							<thead>
+								<tr>
+									<th colspan="9" style="text-align: center;">管理员列表</th>
+								</tr>
+								<tr class="text-c">
+									<th>ID</th>
+									<th width="270">管理员名</th>
+									<th width="270">真实姓名</th>
+									<th width="270">联系电话</th>
+									<th width="270">等级</th>
+									<th width="270">状态</th>
+									<th width="130" class="action">操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="text-c" v-for="(admin,index) in adminList">
+									<td>{{ admin.adminId }}</td>
+									<td>{{ admin.adminName }}</td>
+									<td>{{ admin.adminRealName }}</td>
+									<td>{{ admin.adminTel }}</td>
+									<td class="td-status">
+										<span v-if="admin.adminLevel== 0">超级管理员</span>
+										<span v-if="admin.adminLevel== 1">普通管理员</span>
+									</td>
+									<td class="td-status">
+										<span class="label label-success radius" v-if="admin.adminStatus == 1">启用</span>
+										<span class="label label-defaunt radius" v-if="admin.adminStatus == 0">停用</span>
+									</td>
+									<td class="td-manage">
+										<a v-if="admin.adminStatus == 1" title="停用" @click="changeAdminStatus(admin.adminId, 0, nowPage, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)"
+										 style="text-decoration:none"><i class="Hui-iconfont">&#xe631;</i></a>
+										<a v-if="admin.adminStatus == 0" title="启用" @click="changeAdminStatus(admin.adminId, 1, nowPage, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)"
+										 style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>
+										<a title="编辑" @click="editAdminAction(admin.adminId, admin.adminName, admin.adminPassword, admin.adminRealName, admin.adminTel)"
+										 data-toggle="modal" style="text-decoration:none" class="ml-5"><i class="Hui-iconfont">&#xe6df;</i></a>
+										<a title="删除" @click="delAdminById(index, admin.adminId)" style="text-decoration:none" class="ml-5"><i class="Hui-iconfont">&#xe6e2;</i></a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div v-if="total != null && total != 0" class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+							每页显示
+							<span class="select-box inline">
+								<select id="selectPageSize" ref="selectPageSize" class="select" @change="findAdminsPage(1, $refs.selectPageSize.value, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)">
+									<option value="5">5</option>
+									<option value="10">10</option>
+									<option value="25">25</option>
+									<option value="50">50</option>
+								</select>
+							</span>
+							条&nbsp;&nbsp;&nbsp;
+							<a class="paginate_button first disabled" aria-controls="DataTables_Table_0" data-dt-idx="0" tabindex="0" id="firstPage"
+							 @click="findAdminsPage(1, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)">首页</a>
+							<a class="paginate_button previous disabled" aria-controls="DataTables_Table_0" data-dt-idx="1" tabindex="0" id="previousPage"
+							 @click="findAdminsPage(nowPage-1, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)">上一页</a>
+							<span><a class="paginate_button current" aria-controls="DataTables_Table_0" data-dt-idx="2" tabindex="0">{{ nowPage }}
+									/ {{ totalPage }}</a></span>
+							<a class="paginate_button next disabled" aria-controls="DataTables_Table_0" data-dt-idx="3" tabindex="0" id="nextPage"
+							 @click="findAdminsPage(nowPage+1, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)">下一页</a>
+							<a class="paginate_button last disabled" aria-controls="DataTables_Table_0" data-dt-idx="4" tabindex="0" id="lastPage"
+							 @click="findAdminsPage(totalPage, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)">尾页</a>
+						</div>
+					</div>
+				</div>
+				<div id="admin-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content radius">
+							<div class="modal-header">
+								<h3 v-if="action == 0" class="modal-title">编辑管理员</h3>
+								<h3 v-if="action == 1" class="modal-title">添加管理员</h3>
+								<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+							</div>
+							<div class="modal-body">
+								<article class="page-container">
+									<form class="form form-horizontal" id="form-admin">
+										<div class="row cl" id="adminId">
+											<label class="form-label col-xs-4 col-sm-3">ID：</label>
+											<div class="formControls col-xs-8 col-sm-7">
+												<p id="editAdminId" ref="editAdminId"></p>
+											</div>
+										</div>
+										<div class="row cl">
+											<label class="form-label col-xs-4 col-sm-3">管理员名：</label>
+											<div class="formControls col-xs-8 col-sm-7">
+												<input id="editAdminName" ref="editAdminName" type="text" class="input-text" placeholder="5-16位字母数字下划线">
+												<p id="adminName" type="text" class="input-text" hidden="hidden"></p>
+											</div>
+											<div>
+												<strong id="adminResult" style="font-size:15px;"></strong>
+											</div>
+										</div>
+										<div class="row cl">
+											<label class="form-label col-xs-4 col-sm-3">密码：</label>
+											<div class="formControls col-xs-8 col-sm-7">
+												<input id="editAdminPassword" ref="editAdminPassword" type="password" class="input-text" placeholder="5-16位字母数字下划线">
+											</div>
+										</div>
+										<div class="row cl">
+											<label class="form-label col-xs-4 col-sm-3">确认密码：</label>
+											<div class="formControls col-xs-8 col-sm-7">
+												<input id="confirmAdminPassword" ref="confirmAdminPassword" type="password" class="input-text" placeholder="5-16位字母数字下划线">
+											</div>
+										</div>
+										<div class="row cl">
+											<label class="form-label col-xs-4 col-sm-3">真实姓名：</label>
+											<div class="formControls col-xs-8 col-sm-7">
+												<input id="editAdminRealName" ref="editAdminRealName" type="text" class="input-text" placeholder="2-20位字符">
+											</div>
+										</div>
+										<div class="row cl">
+											<label class="form-label col-xs-4 col-sm-3">联系电话：</label>
+											<div class="formControls col-xs-8 col-sm-7">
+												<input id="editAdminTel" ref="editAdminTel" type="text" class="input-text" placeholder="11位手机号码">
+											</div>
+										</div>
+									</form>
+								</article>
+							</div>
+							<div class="modal-footer">
+								<button v-if="action == 0" @click="updateAdmin($refs.editAdminId.innerText, $refs.editAdminName.value, $refs.editAdminPassword.value, $refs.confirmAdminPassword.value, $refs.editAdminRealName.value, $refs.editAdminTel.value, nowPage, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)"
+								 class="btn btn-primary" data-dismiss="modal">确定</button>
+								<button v-if="action == 1" @click="addAdmin($refs.editAdminName.value, $refs.editAdminPassword.value, $refs.confirmAdminPassword.value, $refs.editAdminRealName.value, $refs.editAdminTel.value, nowPage, pageSize, $refs.selectAdminStatus.value, $refs.content.value, $refs.fields.value)"
+								 class="btn btn-primary" data-dismiss="modal">确定</button>
+								<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--_footer 作为公共模版分离出去-->
+		<script type="text/javascript" src="../static/hui/lib/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/layer/2.4/layer.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui/js/H-ui.min.js"></script>
+		<script type="text/javascript" src="../static/hui/static/h-ui.admin/js/H-ui.admin.js"></script>
+		<!--/_footer 作为公共模版分离出去-->
+		<!--请在下方写此页面业务相关的脚本-->
+		<script type="text/javascript" src="../static/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="../static/hui/lib/laypage/1.2/laypage.js"></script>
+		<script type="text/javascript" src="../static/js/vue.js"></script>
+		<script type="text/javascript" src="../static/js/axios.min.js"></script>
+		<script type="text/javascript" src="../static/js/accounting.min.js"></script>
+		<script type="text/javascript" src="../static/js/day.min.js"></script>
+		<script type="text/javascript">
+			var adminResult; //记录异步校验管理员名结果，0：不可用，1：可用
+			var logAdminId; //记录当前已登录管理员的ID
+			var logAdminLevel; //记录当前已登录管理员的等级
+
+			/* 管理员模态框关闭时清空其内容 */
+			$("body").on("hide.bs.modal", "#admin-modal", function() {
+				$("#adminResult").text('');
+				$("#editAdminId").text('');
+				$('#form-admin')[0].reset();
+			});
+
+			/* 查询当前已登录管理员的等级 */
+			$(function() {
+				$.ajax({
+					type: 'get',
+					url: '../api/admin/findAdminInfo',
+					dataType: 'json',
+					success: function(data) {
+						console.log(data);
+						if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+							window.location.href = '../admin/admin-login.html';
+						} else if (data != null) {
+							logAdminId = data.adminId;
+							logAdminLevel = data.adminLevel;
+						}
+						// console.log(logAdminId);
+						// console.log(logAdminLevel);
+						if (logAdminLevel == 0) {
+							$("#adminLevel").text("超级管理员");
+						}
+					},
+					error: function(data) {
+						console.log(data.msg);
+						//后端返回session为空的信息则跳转到登录页面
+						if (data.responseText == 'sessionIsNull') {
+							window.location.href = '../admin/admin-login.html';
+						}
+					},
+				});
+			})
+
+			/* vue */
+			var vm = new Vue({
+				el: '#adminList',
+				data: {
+					adminList: {}, //管理员List集合
+					pageSize: {}, //每页条数
+					nowPage: {}, //当前页
+					totalPage: {}, //总页数
+					total: {}, //总条数
+					action: 0 //要执行的操作，0：编辑，1：添加
+				},
+				mounted() { //在vue实例挂载完毕（页面加载完毕）时调用数据初始化方法
+					this.findAdminsPage(1, 5, null, null, null);
+				},
+				methods: {
+					/* 分页模糊查询管理员信息 */
+					findAdminsPage: function(nowPage, pageSize, selectAdminStatus, content, fields, findAction) {
+						if (content == "" && findAction == 1) {
+							layer.msg('请输入查询内容', {
+								icon: 2,
+								time: 1500
+							});
+						} else {
+							var that = this; //this指向vm
+							axios.get('../api/admin/findAdminsPage', {
+									params: {
+										nowPage: nowPage, //当前页
+										pageSize: pageSize, //每页条数
+										adminStatus: selectAdminStatus, //管理员状态
+										content: content, //模糊查询内容
+										fields: fields //模糊查询字段
+									},
+									headers: {
+										'x-requested-with': 'XMLHttpRequest'
+									},
+								})
+								.then(function(response) {
+									if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+										window.location.href = '../admin/admin-login.html';
+									} else {
+										that.adminList = response.data.adminList; //获取管理员信息
+										that.dormitoryNoList = response.data.dormitoryNoList; //获取绑定的宿舍号
+										that.pageSize = response.data.pageSize; //获取每页条数
+										that.nowPage = response.data.nowPage; //获取当前页
+										that.totalPage = response.data.totalPage; //获取总页数
+										that.total = response.data.total; //获取总条数
+										if (response.data.error != null) {
+											layer.msg(response.data.error, {
+												icon: 2,
+												time: 1500
+											});
+										}
+									}
+								})
+								.catch(function(error) {
+									console.log(error);
+								});
+						}
+					},
+
+					/* 根据管理员ID删除管理员信息 */
+					delAdminById: function(index, adminId) {
+						if (logAdminLevel != 0) {
+							layer.msg('操作失败，您不是超级管理员，没有该权限', {
+								icon: 2,
+								time: 1500
+							});
+						} else {
+							var that = this; //this指向vm
+							layer.confirm('确认要删除吗？', function() {
+								$.ajax({
+									type: 'delete',
+									url: '../api/admin/delAdminById',
+									dataType: 'json',
+									data: {
+										'adminId': adminId
+									},
+									success: function(data) {
+										if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+											window.location.href = '../admin/admin-login.html';
+										} else if (data == 1) {
+											layer.msg('已删除', {
+												icon: 1,
+												time: 1500
+											});
+											that.adminList.splice(index, 1); //删除一行表格
+										} else {
+											layer.msg('删除失败', {
+												icon: 2,
+												time: 1500
+											});
+										}
+									},
+									error: function(data) {
+										console.log(data.msg);
+										layer.msg('删除失败', {
+											icon: 2,
+											time: 1500
+										});
+										//后端返回session为空的信息则跳转到登录页面
+										if (data.responseText == 'sessionIsNull') {
+											window.location.href = '../admin/admin-login.html';
+										}
+									},
+								});
+							});
+						}
+					},
+
+					/* 停用、启用 */
+					changeAdminStatus: function(adminId, adminStatus, nowPage, pageSize, selectAdminStatus, content, fields) {
+						if (logAdminLevel != 0) {
+							layer.msg('操作失败，您不是超级管理员，没有该权限', {
+								icon: 2,
+								time: 1500
+							});
+						} else if (adminId == logAdminId) {
+							layer.msg('操作失败，您不能停用自己的账号', {
+								icon: 2,
+								time: 1500
+							});
+						} else {
+							var action; //要进行的操作
+							if (adminStatus == 1) {
+								action = '启用';
+							} else if (adminStatus == 0) {
+								action = '停用';
+							}
+							var that = this; //this指向vm
+							layer.confirm('确认要' + action + '吗？', function() {
+								$.ajax({
+									type: 'put',
+									url: '../api/admin/updateAdmin',
+									dataType: 'json',
+									data: {
+										'adminId': adminId,
+										'adminStatus': adminStatus
+									},
+									success: function(data) {
+										console.log(data);
+										if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+											window.location.href = '../admin/admin-login.html';
+										} else if (data == 1) {
+											layer.msg('已' + action, {
+												icon: 1,
+												time: 1500
+											});
+											that.findAdminsPage(nowPage, pageSize, selectAdminStatus, content, fields); //重新查询数据并渲染页面
+										} else {
+											layer.msg(action + '失败', {
+												icon: 2,
+												time: 1500
+											});
+										}
+									},
+									error: function(data) {
+										console.log(data.msg);
+										layer.msg(action + '失败', {
+											icon: 2,
+											time: 1500
+										});
+										//后端返回session为空的信息则跳转到登录页面
+										if (data.responseText == 'sessionIsNull') {
+											window.location.href = '../admin/admin-login.html';
+										}
+									},
+								});
+							})
+						}
+					},
+
+					/* 修改管理员信息 */
+					updateAdmin: function(editAdminId, editAdminName, editAdminPassword, confirmAdminPassword, editAdminRealName,
+						editAdminTel, nowPage, pageSize, selectAdminStatus, content, fields) {
+						if (editAdminName == "" || editAdminPassword == "" || confirmAdminPassword == "" || editAdminRealName ==
+							"" || editAdminTel == "") {
+							layer.msg('每项信息都必填', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (adminResult == 0) {
+							layer.msg('修改失败，管理员名不可用', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (editAdminPassword.trim().match(/^\w{5,16}$/).toString() == null) {
+							layer.msg('密码由5-16位字母数字下划线组成', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (confirmAdminPassword != editAdminPassword.trim().match(/^\w{5,16}$/).toString()) {
+							layer.msg('两次输入的密码不一致', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (editAdminRealName.trim().match(/^.{2,20}$/).toString() == null) {
+							layer.msg('真实姓名由2-20位字符组成', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (editAdminTel.trim().match(
+								/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-7|9])|(?:5[0-3|5-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1|8|9]))\d{8}$/
+							).toString() == null) {
+							layer.msg('联系电话不合法', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else {
+							var that = this; //this指向vm
+							layer.confirm('确认要修改吗？', function() {
+								$.ajax({
+									type: 'put',
+									url: '../api/admin/updateAdmin',
+									dataType: 'json',
+									data: {
+										'adminId': editAdminId,
+										'adminName': editAdminName,
+										'adminPassword': editAdminPassword,
+										'adminRealName': editAdminRealName,
+										'adminTel': editAdminTel,
+									},
+									success: function(data) {
+										console.log(data);
+										if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+											window.location.href = '../admin/admin-login.html';
+										} else if (data == 1) {
+											layer.msg('已修改', {
+												icon: 1,
+												time: 1500
+											});
+											that.findAdminsPage(nowPage, pageSize, selectAdminStatus, content, fields); //重新查询数据并渲染页面
+										} else {
+											layer.msg('修改失败', {
+												icon: 2,
+												time: 1500
+											});
+										}
+									},
+									error: function(data) {
+										console.log(data.msg);
+										layer.msg('修改失败', {
+											icon: 2,
+											time: 1500
+										});
+										//后端返回session为空的信息则跳转到登录页面
+										if (data.responseText == 'sessionIsNull') {
+											window.location.href = '../admin/admin-login.html';
+										}
+									},
+								});
+							})
+						}
+					},
+
+					/* 添加管理员信息 */
+					addAdmin: function(editAdminName, editAdminPassword, confirmAdminPassword, editAdminRealName, editAdminTel,
+						nowPage, pageSize, selectAdminStatus, content, fields) {
+						console.log(editAdminName);
+						if (editAdminName == "" || editAdminPassword == "" || confirmAdminPassword == "" || editAdminRealName ==
+							"" || editAdminTel == "") {
+							layer.msg('每项信息都必填', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (adminResult == 0) {
+							layer.msg('添加失败，管理员名不可用', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (editAdminPassword.trim().match(/^\w{5,16}$/).toString() == null) {
+							layer.msg('密码由5-16位字母数字下划线组成', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (confirmAdminPassword != editAdminPassword.trim().match(/^\w{5,16}$/).toString()) {
+							layer.msg('两次输入的密码不一致', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (editAdminRealName.trim().match(/^.{2,20}$/).toString() == null) {
+							layer.msg('真实姓名由2-20位字符组成', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else if (editAdminTel.trim().match(
+								/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-7|9])|(?:5[0-3|5-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1|8|9]))\d{8}$/
+							).toString() == null) {
+							layer.msg('联系电话不合法', {
+								icon: 2,
+								offset: '50%',
+								time: 1500
+							})
+						} else {
+							var that = this; //this指向vm
+							layer.confirm('确认要添加吗？', function() {
+								$.ajax({
+									type: 'post',
+									url: '../api/admin/addAdmin',
+									dataType: 'json',
+									data: {
+										'adminName': editAdminName,
+										'adminPassword': editAdminPassword,
+										'adminRealName': editAdminRealName,
+										'adminTel': editAdminTel,
+										'adminStatus': 1,
+										'adminLevel': 1
+									},
+									success: function(data) {
+										console.log(data);
+										if (data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
+											window.location.href = '../admin/admin-login.html';
+										} else if (data == 1) {
+											layer.msg('已添加', {
+												icon: 1,
+												time: 1500
+											});
+											that.findAdminsPage(nowPage, pageSize, selectAdminStatus, content, fields); //重新查询数据并渲染页面
+										} else {
+											layer.msg('添加失败', {
+												icon: 2,
+												time: 1500
+											});
+										}
+									},
+									error: function(data) {
+										console.log(data.msg);
+										layer.msg('添加失败', {
+											icon: 2,
+											time: 1500
+										});
+										//后端返回session为空的信息则跳转到登录页面
+										if (data.responseText == 'sessionIsNull') {
+											window.location.href = '../admin/admin-login.html';
+										}
+									},
+								});
+							})
+						}
+					},
+
+					/* 编辑管理员操作-模态框赋初值 */
+					editAdminAction: function(adminId, adminName, adminPassword, adminRealName, adminTel, dormitoryNo, dormitoryId) {
+						if (adminId != logAdminId && logAdminLevel != 0) {
+							layer.msg('操作失败，您不是超级管理员，只能修改本人信息', {
+								icon: 2,
+								time: 2000
+							});
+						} else {
+							$('#admin-modal').modal();
+							$("#editAdminId").text(adminId);
+							$("#editAdminName").val(adminName);
+							$("#adminName").text(adminName);
+							$("#editAdminPassword").val(adminPassword);
+							$("#confirmAdminPassword").val(adminPassword);
+							$("#editAdminRealName").val(adminRealName);
+							$("#editAdminTel").val(adminTel);
+							this.action = 0;
+							adminResult = null;
+							$("#adminId").show();
+						}
+					},
+
+					/* 添加管理员操作*/
+					addAdminAction: function() {
+						if (logAdminLevel != 0) {
+							layer.msg('操作失败，您不是超级管理员，没有该权限', {
+								icon: 2,
+								time: 2000
+							});
+						} else {
+							$('#admin-modal').modal();
+							this.action = 1;
+							adminResult = null;
+							$("#adminId").hide();
+						}
+					},
+				},
+			})
+
+			/* 异步查询管理员名是否可用 */
+			$("#editAdminName").keyup(function() {
+				var editAdminName = $("#editAdminName").val().trim().match(/^\w{5,16}$/); //修改后的管理员名
+				var adminName = $("#adminName").text(); //原管理员名
+				console.log(editAdminName);
+				if (editAdminName == null) {
+					$("#adminResult").text("不可用");
+					adminResult = 0;
+				} else if (editAdminName.toString() == adminName) {
+					$("#adminResult").text("可用");
+					adminResult = 1;
+				} else {
+					$.ajax({
+						type: 'get',
+						url: '../api/findAdminByAdminName',
+						data: {
+							'adminName': editAdminName.toString()
+						},
+						success: function(data) {
+							if (data != 0) {
+								$("#adminResult").text("不可用");
+								adminResult = 0;
+							} else {
+								$("#adminResult").text("可用");
+								adminResult = 1;
+							}
+						},
+						error: function(data) {
+							console.log(data.msg);
+						},
+					})
+				}
+			})
+		</script>
+	</body>
+</html>

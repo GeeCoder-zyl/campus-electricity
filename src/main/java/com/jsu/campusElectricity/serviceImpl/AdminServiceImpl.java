@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.mapper.AdminMapper;
 import com.jsu.campusElectricity.pojo.Admin;
 import com.jsu.campusElectricity.service.AdminService;
@@ -53,6 +55,42 @@ public class AdminServiceImpl implements AdminService {
 		queryWrapper.eq("admin_name", adminName);
 		Admin admin = adminMapper.selectOne(queryWrapper);
 		return admin;
+	}
+
+	/**
+	 * 分页模糊查询管理员信息
+	 */
+	@Override
+	public IPage<Admin> listAdminsPage(Page<Admin> page, Admin admin) {
+		IPage<Admin> adminList = adminMapper.listAdminsPage(page, admin);
+		return adminList;
+	}
+
+	/**
+	 * 修改管理员信息
+	 */
+	@Override
+	public int updateAdmin(Admin admin) {
+		int num = adminMapper.updateById(admin);
+		return num;
+	}
+
+	/**
+	 * 新增管理员
+	 */
+	@Override
+	public int insertAdmin(Admin admin) {
+		int num = adminMapper.insert(admin);
+		return num;
+	}
+
+	/**
+	 * 根据ID删除管理员
+	 */
+	@Override
+	public int deleteAdminById(int adminId) {
+		int num = adminMapper.deleteById(adminId);
+		return num;
 	}
 
 }

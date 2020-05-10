@@ -3,7 +3,11 @@
  */
 package com.jsu.campusElectricity.mapper;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.pojo.Admin;
 
 /**
@@ -15,4 +19,12 @@ import com.jsu.campusElectricity.pojo.Admin;
  */
 public interface AdminMapper extends BaseMapper<Admin> {
 
+	/**
+	 * 分页模糊查询管理员信息
+	 * 
+	 * @param page
+	 * @param admin
+	 * @return
+	 */
+	IPage<Admin> listAdminsPage(Page<Admin> page, @Param("admin") Admin admin);
 }

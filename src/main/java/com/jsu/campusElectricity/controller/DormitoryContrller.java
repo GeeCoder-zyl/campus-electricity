@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.pojo.Dormitory;
-import com.jsu.campusElectricity.pojo.Pay;
 import com.jsu.campusElectricity.service.DormitoryService;
 import com.jsu.campusElectricity.utils.ExportExcel;
 import com.jsu.campusElectricity.utils.FinalConstant;
@@ -89,7 +88,7 @@ public class DormitoryContrller implements FinalConstant {
 		map.put("total", total);
 
 		// 根据宿舍号和送电状态分页模糊查询宿舍信息
-		IPage<Dormitory> iPage = dormitoryService.listDormitorysPage(new Page<Pay>(nowPage, pageSize), dormitory);
+		IPage<Dormitory> iPage = dormitoryService.listDormitorysPage(new Page<Dormitory>(nowPage, pageSize), dormitory);
 		nowPage = iPage.getCurrent();// 当前页
 		totalPage = iPage.getPages();// 总页数
 		long total = iPage.getTotal();// 总条数
@@ -136,7 +135,7 @@ public class DormitoryContrller implements FinalConstant {
 		} else if (nowPage > totalPage) {
 			nowPage = totalPage;
 		}
-		IPage<Dormitory> iPage = dormitoryService.listDormitorysPage(new Page<Pay>(nowPage, pageSize), dormitory);
+		IPage<Dormitory> iPage = dormitoryService.listDormitorysPage(new Page<Dormitory>(nowPage, pageSize), dormitory);
 		List<Dormitory> dormitoryList = iPage.getRecords();
 		if (dormitoryList.size() == 0) {
 			map.put(REQUEST_ERROR, "未找到宿舍信息！");

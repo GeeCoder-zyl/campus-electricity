@@ -115,4 +115,16 @@ public class ConsumeServiceImpl implements ConsumeService {
 		return consume;
 	}
 
+	/**
+	 * 根据宿舍ID查询近30天消费记录
+	 */
+	@Override
+	public List<Consume> listConsumesByDormitoryIdLatest30Days(int dormitoryId) {
+		QueryWrapper<Consume> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("dormitory_id", dormitoryId);
+		List<Consume> consumeList = consumeMapper
+				.selectList(queryWrapper.orderByDesc("consume_date").last("limit 0,30"));
+		return consumeList;
+	}
+
 }

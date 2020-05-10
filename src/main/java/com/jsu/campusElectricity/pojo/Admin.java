@@ -30,4 +30,16 @@ public class Admin {
 
 	@TableField(value = "admin_password")
 	private String adminPassword;// 管理员密码
+
+	@TableField(value = "admin_status")
+	private Integer adminStatus;// 管理员状态
+
+	@TableField(value = "admin_level")
+	private Integer adminLevel;// 管理员等级
+
+	@TableField(value = "admin_real_name")
+	private String adminRealName;// 管理员真实姓名
+
+	@TableField(value = "admin_tel")
+	private String adminTel;// 管理员电话
 }

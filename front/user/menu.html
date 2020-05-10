@@ -13,10 +13,14 @@
 			<a id="personalInfo" href="../user/personal-info.html?menu=personalInfo"><i class="icon iconfont"></i>个人信息</a>
 		</li>
 		<li>
-			<a id="consumeRecord" href="../user/consume-record.html?menu=consumeRecord"><i class="icon iconfont"></i>消费记录</a>
+			<a id="payRecord" href="../user/pay-record.html?menu=payRecord"><i class="icon iconfont"></i>充值记录</a>
 		</li>
 		<li>
-			<a id="payRecord" href="../user/pay-record.html?menu=payRecord"><i class="icon iconfont"></i>充值记录</a>
+			<a id="consumeRecord" href="../user/consume-record.html?menu=consumeRecord"><i class="icon iconfont"></i>用电记录</a>
+		</li>
+		<li>
+			<a id="electricityConsumptionStatistics" href="../user/electricity-consumption-statistics.html?menu=electricityConsumptionStatistics"><i
+				 class="icon iconfont"></i>用电量统计</a>
 		</li>
 	</ul>
 </div>
@@ -26,7 +30,12 @@
 		var menu;
 		var url = window.location.search; //获取url中"?"后的字符串
 		if (url.indexOf("?") != -1) {
-			menu = url.substr(url.indexOf("=") + 1); //获取"="和"&"之间的字符串
+			if (url.indexOf("charset") != -1) {
+				menu = url.substr(url.indexOf("=") + 1, url.indexOf("&") - 6);
+			} else {
+				menu = url.substr(url.indexOf("=") + 1);
+			}
+			console.log(menu);
 		}
 		if (menu == 'index') {
 			$("#index").addClass("active");
@@ -36,6 +45,8 @@
 			$("#consumeRecord").addClass("active");
 		} else if (menu == 'payRecord') {
 			$("#payRecord").addClass("active");
+		} else if (menu == 'electricityConsumptionStatistics') {
+			$("#electricityConsumptionStatistics").addClass("active");
 		}
 	})
 </script>

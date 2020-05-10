@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>消费记录</title>
+		<title>用电记录</title>
 		<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../static/css/iconfont.css" />
 		<link rel="stylesheet" type="text/css" href="../static/css/style.css" />
@@ -31,7 +31,7 @@
 			<div id="consumeRecord">
 				<div class="right">
 					<div class="tap">
-						<span>消费记录</span>
+						<span>用电记录</span>
 					</div>
 					<div class="container">
 						<table>
@@ -98,7 +98,7 @@
 				return accounting.formatMoney(money, "￥", 2, ",", ".");
 			});
 
-			/* Axios获取消费记录数据 */
+			/* Axios获取用电记录数据 */
 			var vm = new Vue({
 				el: '#consumeRecord',
 				data: {
@@ -128,7 +128,7 @@
 								if (response.data == 'sessionIsNull') { //后端返回session为空的信息则跳转到登录页面
 									window.location.href = '../user/user-login.html';
 								} else {
-									that.consumeList = response.data.consumeList; //获取消费记录
+									that.consumeList = response.data.consumeList; //获取用电记录
 									that.nowPage = response.data.nowPage; //获取当前页
 									that.pageSize = response.data.pageSize; //获取每页条数
 									that.totalPage = response.data.totalPage; //获取总页数

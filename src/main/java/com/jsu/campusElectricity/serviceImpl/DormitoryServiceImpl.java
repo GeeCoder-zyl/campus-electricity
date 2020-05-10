@@ -13,7 +13,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsu.campusElectricity.mapper.DormitoryMapper;
 import com.jsu.campusElectricity.pojo.Dormitory;
-import com.jsu.campusElectricity.pojo.Pay;
 import com.jsu.campusElectricity.service.DormitoryService;
 
 /**
@@ -61,7 +60,7 @@ public class DormitoryServiceImpl implements DormitoryService {
 	 * 根据宿舍号和送电状态分页模糊查询宿舍信息
 	 */
 	@Override
-	public IPage<Dormitory> listDormitorysPage(Page<Pay> page, Dormitory dormitory) {
+	public IPage<Dormitory> listDormitorysPage(Page<Dormitory> page, Dormitory dormitory) {
 		IPage<Dormitory> dormitoryList = dormitoryMapper.listDormitorysPage(page, dormitory);
 		return dormitoryList;
 	}

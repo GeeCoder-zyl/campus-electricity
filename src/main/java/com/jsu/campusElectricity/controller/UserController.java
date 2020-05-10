@@ -1,7 +1,13 @@
 package com.jsu.campusElectricity.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +15,18 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.swing.JOptionPane;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -317,7 +334,6 @@ public class UserController implements FinalConstant {
 
 		System.out.println("管理员修改用户信息End...");
 		return num;
-
 	}
 
 	/**
@@ -422,7 +438,7 @@ public class UserController implements FinalConstant {
 		} else if (nowPage > totalPage) {
 			nowPage = totalPage;
 		}
-		IPage<User> iPage = userService.listUsersPage(new Page<Pay>(nowPage, pageSize), user);
+		IPage<User> iPage = userService.listUsersPage(new Page<User>(nowPage, pageSize), user);
 		nowPage = iPage.getCurrent();// 当前页
 		totalPage = iPage.getPages();// 总页数
 		long total = iPage.getTotal();// 总条数
@@ -509,7 +525,7 @@ public class UserController implements FinalConstant {
 		} else if (nowPage > totalPage) {
 			nowPage = totalPage;
 		}
-		IPage<User> iPage = userService.listUsersPage(new Page<Pay>(nowPage, pageSize), user);
+		IPage<User> iPage = userService.listUsersPage(new Page<User>(nowPage, pageSize), user);
 		nowPage = iPage.getCurrent();// 当前页
 		totalPage = iPage.getPages();// 总页数
 		long total = iPage.getTotal();// 总条数
@@ -595,9 +611,132 @@ public class UserController implements FinalConstant {
 		if (user == null) {
 			return 0;
 		}
+		System.out.println(user);
 
 		System.out.println("根据用户名查询用户信息End...");
 		return 1;
+	}
+
+	/**
+	 * 上传Excel到服务器
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping("/admin/fileUpload")
+	public static String fileUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// 允许上传的文件类型
+		String fileType = "xls,xlsx";
+		// 允许上传的文件最大大小(100M,单位为byte)
+		int maxSize = 1024 * 1024 * 100;
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		// 文件要保存的路径
+		@SuppressWarnings("deprecation")
+		String savePath = request.getRealPath("/") + "excelFiles/";
+		response.setContentType("text/html; charset=UTF-8");
+		// 检查目录
+		File uploadDir = new File(savePath);
+		if (!uploadDir.exists()) {
+			uploadDir.mkdirs();
+		}
+		if (!uploadDir.canWrite()) {
+			return "上传目录没有写权限！";
+		}
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+		// 设置缓冲区大小，这里是1M
+		factory.setSizeThreshold(1024 * 1024);
+		// 设置缓冲区目录
+		factory.setRepository(uploadDir);
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		upload.setHeaderEncoding("UTF-8");
+		List<FileItem> items = upload.parseRequest(request);
+		Iterator<FileItem> it = items.iterator();
+		FileItem item = null;
+		String fileName = "";
+		String name = "";
+		String extName = "";
+		String newFileName = "";
+		while (it.hasNext()) {
+			item = (FileItem) it.next();
+			fileName = item.getName();
+			if (null == fileName || "".equals(fileName)) {
+				continue;
+			}
+			// 判断文件大小是否超限
+			if (item.getSize() > maxSize) {
+				item.delete();
+				JOptionPane.showMessageDialog(null, "文件大小超过限制！应小于" + maxSize / 1024 / 1024 + "M");
+				return "文件大小超过限制！应小于" + maxSize;
+			}
+			// 获取文件名称
+			name = fileName.substring(fileName.lastIndexOf("\\") + 1, fileName.lastIndexOf("."));
+			// 获取文件后缀名
+			extName = fileName.substring(fileName.indexOf(".") + 1).toLowerCase().trim();
+			// 判断是否为允许上传的文件类型
+			if (!Arrays.<String>asList(fileType.split(",")).contains(extName)) {
+				item.delete();
+				return "文件类型不正确，必须为" + fileType + "的文件！";
+			}
+			newFileName = name + "." + extName;
+			File uploadedFile = new File(savePath, newFileName);
+			item.write(uploadedFile);
+			// 在这里添加读取Excel的方法来根据路径读取Excel内容
+			uploadedFile.delete();
+		}
+		return "success";
+	}
+
+	// 读取Excel，获取Excel的文本和数字格式的内容，可根据需要修改
+	@SuppressWarnings("resource")
+	public static List<String> readExcel(String filePath) {
+		List<String> list = new ArrayList<String>();
+		// 判断是否是excel2007格式
+		boolean isE2007 = false;
+		if (filePath.endsWith("xlsx"))
+			isE2007 = true;
+		try {
+			// 建立输入流
+			InputStream input = new FileInputStream(filePath);
+			Workbook wb = null;
+			// 根据文件格式(2003或者2007)来初始化
+			if (isE2007)
+				wb = new XSSFWorkbook(input);
+			else
+				wb = new HSSFWorkbook(input);
+			// 获得第一个表单
+			Sheet sheet = wb.getSheetAt(0);
+			// 获得第一个表单的迭代器
+			Iterator<Row> rows = sheet.rowIterator();
+			while (rows.hasNext()) {
+				// 获得行数据
+				Row row = rows.next();
+				// 获得第一行的迭代器
+				Iterator<Cell> cells = row.cellIterator();
+				while (cells.hasNext()) {
+					Cell cell = cells.next();
+					// 根据cell中的类型来输出数据
+					switch (cell.getCellType()) {
+					case HSSFCell.CELL_TYPE_NUMERIC:
+						list.add(String.valueOf(new BigDecimal(cell.getNumericCellValue())));
+						break;
+					case HSSFCell.CELL_TYPE_STRING:
+						list.add(cell.getStringCellValue());
+						break;
+					case HSSFCell.CELL_TYPE_BOOLEAN:
+						break;
+					case HSSFCell.CELL_TYPE_FORMULA:
+						break;
+					}
+				}
+			}
+			input.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		System.out.println("解析的数据：" + list);
+		return list;
 	}
 
 //	/**

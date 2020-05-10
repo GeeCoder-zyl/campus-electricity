@@ -39,7 +39,7 @@
 				<div class="cl pd-5 bg-1 bk-gray mt-20">
 					<span class="l">
 						<a data-toggle="modal" data-target="#modal-dormitory-add" class="btn btn-primary radius" data-title="添加宿舍">
-							<i class="Hui-iconfont">&#xe600;</i>添加宿舍</a>
+							<i class="Hui-iconfont">&#xe600;</i> 添加宿舍</a>
 					</span>
 					<span class="r" style="font-size:15px;">共有数据：<strong>{{ total }}</strong> 条，每页显示：<strong>{{ pageSize }} 条</strong></span>
 				</div>
@@ -125,7 +125,8 @@
 										<div class="row cl">
 											<label class="form-label col-xs-4 col-sm-3">宿舍号：</label>
 											<div class="formControls col-xs-8 col-sm-7">
-												<input ref="addDormitoryNo" id="addDormitoryNo" type="text" class="input-text" placeholder="纯数字编号">
+												<input ref="addDormitoryNo" id="addDormitoryNo" type="text" class="input-text" placeholder="5-10位纯数字编号">
+												<p style="font-size:15px;">例：1栋2单元301-4即输入123014</p>
 											</div>
 											<div>
 												<strong id="addResult" style="font-size:15px;"></strong>
@@ -168,7 +169,8 @@
 										<div class="row cl">
 											<label class="form-label col-xs-4 col-sm-3">宿舍号：</label>
 											<div class="formControls col-xs-8 col-sm-7">
-												<input id="editDormitoryNo" ref="editDormitoryNo" type="text" class="input-text" placeholder="纯数字编号">
+												<input id="editDormitoryNo" ref="editDormitoryNo" type="text" class="input-text" placeholder="5-10位纯数字编号">
+												<p style="font-size:15px;">例：1栋2单元301-4即输入123014</p>
 											</div>
 											<div>
 												<strong id="editResult" style="font-size:15px;"></strong>

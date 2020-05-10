@@ -5,7 +5,6 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jsu.campusElectricity.pojo.Pay;
 import com.jsu.campusElectricity.pojo.User;
 
 /**
@@ -16,12 +15,13 @@ import com.jsu.campusElectricity.pojo.User;
  * @Description: 用户数据库映射
  */
 public interface UserMapper extends BaseMapper<User> {
+
 	/**
-	 * 模糊查询用户信息
+	 * 分页模糊查询用户信息
 	 * 
 	 * @param page
 	 * @param user
 	 * @return
 	 */
-	IPage<User> listUsersPage(Page<Pay> page, @Param("user") User user);
+	IPage<User> listUsersPage(Page<User> page, @Param("user") User user);
 }

@@ -13,11 +13,11 @@
 		<link rel="stylesheet" type="text/css" href="../static/hui/lib/Hui-iconfont/1.0.8/iconfont.css" />
 		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/skin/default/skin.css" id="skin" />
 		<link rel="stylesheet" type="text/css" href="../static/hui/static/h-ui.admin/css/style.css" />
-		<title>宿舍消费记录</title>
+		<title>宿舍日用电量记录</title>
 	</head>
 	<body>
 		<nav class="breadcrumb">
-			首页 <span class="c-gray en">&gt;</span>消费记录 <span class="c-gray en">&gt;</span>宿舍消费记录
+			首页 <span class="c-gray en">&gt;</span>用电记录 <span class="c-gray en">&gt;</span>宿舍日用电量记录
 			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
 			 title="刷新页面"><i class="Hui-iconfont">&#xe68f;</i></a>
 		</nav>
@@ -50,7 +50,7 @@
 						<table class="table table-border table-bordered table-hover table-bg table-sort">
 							<thead>
 								<tr>
-									<th colspan="9" style="text-align: center;">宿舍消费记录</th>
+									<th colspan="9" style="text-align: center;">宿舍日用电量记录</th>
 								</tr>
 								<tr class="text-c">
 									<th>ID</th>
@@ -123,11 +123,11 @@
 				return accounting.formatMoney(money, "￥", 2, ",", ".");
 			});
 
-			/* Axios获取消费记录数据 */
+			/* Axios获取宿舍日用电量记录数据 */
 			var vm = new Vue({
 				el: '#consumeRecord',
 				data: {
-					consumeList: {}, //消费记录list集合
+					consumeList: {}, //宿舍日用电量记录list集合
 					dormitoryNoList: {}, //宿舍号list集合
 					nowPage: {}, //当前页
 					pageSize: {}, //每页条数
@@ -175,7 +175,7 @@
 							});
 					},
 
-					/* 导出消费记录 */
+					/* 导出宿舍日用电量记录 */
 					exportConsumesToExcel: function(nowPage, pageSize, total, startTime, endTime, dormitoryNo) {
 						var that = this; //this指向vm
 						var hint; //提示信息
@@ -236,7 +236,7 @@
 										if (window.navigator && window.navigator.msSaveOrOpenBlob) {
 											console.log('IE');
 											let blob = new Blob([response.data]);
-											window.navigator.msSaveOrOpenBlob(blob, '宿舍消费记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
+											window.navigator.msSaveOrOpenBlob(blob, '宿舍日用电量记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") +
 												'.xls');
 										} else {
 											/* 火狐谷歌的文件下载方式 */
@@ -245,7 +245,7 @@
 											var downloadElement = document.createElement('a');
 											var href = window.URL.createObjectURL(blob);
 											downloadElement.href = href;
-											downloadElement.download = '宿舍消费记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") + '.xls';
+											downloadElement.download = '宿舍日用电量记录_' + dayjs(new Date).format("YYYY-MM-DD hh：mm：ss") + '.xls';
 											document.body.appendChild(downloadElement);
 											downloadElement.click();
 											document.body.removeChild(downloadElement);

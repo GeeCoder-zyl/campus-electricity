@@ -6,10 +6,13 @@ package com.jsu.campusElectricity.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jsu.campusElectricity.pojo.Consume;
 import com.jsu.campusElectricity.pojo.Dormitory;
+import com.jsu.campusElectricity.pojo.User;
 import com.jsu.campusElectricity.service.ConsumeService;
 import com.jsu.campusElectricity.service.DormitoryService;
+import com.jsu.campusElectricity.service.UserService;
 import com.jsu.campusElectricity.utils.FinalConstant;
 
 /**
@@ -34,6 +39,8 @@ public class StatisticsController implements FinalConstant {
 	ConsumeService consumeService;
 	@Autowired
 	DormitoryService dormitoryService;
+	@Autowired
+	UserService userService;
 
 	/**
 	 * 所有宿舍某日用电量统计
@@ -212,6 +219,61 @@ public class StatisticsController implements FinalConstant {
 		map.put("consumeKwhList", consumeKwhList);
 
 		System.out.println("某宿舍某年内用电量统计End...");
+		return map;
+	}
+
+	/**
+	 * 用户绑定宿舍近30天用电量统计
+	 * 
+	 * @param session
+	 * @return
+	 * @throws ParseException
+	 */
+	@GetMapping("/user/dormitoryLatest30DaysStatistics")
+	public Map<Object, Object> dormitoryLatest30DaysStatistics(HttpSession session) throws ParseException {
+		System.out.println("用户绑定宿舍近30天用电量统计Begin...");
+
+		Map<Object, Object> map = new HashMap<Object, Object>();
+
+		// 从session中获取已登录用户的ID
+		int userId = (int) session.getAttribute(SESSION_USER_ID);
+
+		// 根据用户ID查询用户信息
+		User user = userService.getUserById(userId);
+		if (user.getDormitoryId() == null) {
+			map.put(REQUEST_ERROR, "未绑定宿舍！");
+			return map;
+		}
+
+		// 根据宿舍ID查询宿舍号
+		int dormitoryId = user.getDormitoryId();
+		int dormitoryNo = dormitoryService.getDormitoryById(dormitoryId).getDormitoryNo();
+
+		// 根据宿舍ID查询近30天消费记录
+		List<Consume> consumeList = new ArrayList<>();
+		consumeList = consumeService.listConsumesByDormitoryIdLatest30Days(dormitoryId);
+		if (consumeList == null || consumeList.size() == 0) {
+			map.put(REQUEST_ERROR, "未找到消费记录！");
+			return map;
+		}
+		Collections.reverse(consumeList);// 反转List
+		System.out.println(consumeList);
+
+		// 获取用电量和日期
+		List<String> consumeDateList = new ArrayList<>();
+		List<Double> consumeKwhList = new ArrayList<>();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy年M月d日");
+		for (int i = 0; i < consumeList.size(); i++) {
+			consumeDateList.add(df.format(consumeList.get(i).getConsumeDate()));
+			consumeKwhList.add(consumeList.get(i).getConsumeKwh());
+		}
+		System.out.println(consumeDateList);
+		System.out.println(consumeKwhList);
+		map.put("consumeDateList", consumeDateList);
+		map.put("consumeKwhList", consumeKwhList);
+		map.put("dormitoryNo", dormitoryNo);
+
+		System.out.println("用户绑定宿舍近30天用电量统计End...");
 		return map;
 	}
 }
